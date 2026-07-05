@@ -6,6 +6,7 @@
 const https = require("node:https");
 const { randomUUID } = require("node:crypto");
 const { getSystemPrompt } = require("./prompt");
+const { getKnowledge } = require("./knowledge");
 
 const OAUTH_URL = "https://ngw.devices.sberbank.ru:9443/api/v2/oauth";
 const CHAT_URL = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions";
@@ -193,7 +194,22 @@ module.exports = async (req, res) => {
   }
 
   const history = clientMessages.slice(-MAX_HISTORY_MESSAGES);
-  const messages = [{ role: "system", content: getSystemPrompt() }, ...history];
+
+  let knowledgeBase;
+  try {
+    knowledgeBase = await getKnowledge();
+  } catch (err) {
+    console.error("База знаний недоступна:", err);
+    res.status(200).json({
+      reply: "Секунду, уточню этот момент у администратора и вернусь к вам 🙌",
+    });
+    return;
+  }
+
+  const systemPrompt =
+    `${getSystemPrompt()}\n\n` +
+    `=== БАЗА ЗНАНИЙ САЛОНА ===\n${knowledgeBase}\n=== КОНЕЦ БАЗЫ ЗНАНИЙ ===`;
+  const messages = [{ role: "system", content: systemPrompt }, ...history];
 
   try {
     const { content, finishReason } = await askGigaChat(messages);

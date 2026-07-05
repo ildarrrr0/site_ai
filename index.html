@@ -1,10 +1,10 @@
-<title>idmAI — ИИ-консультант для салонов красоты</title>
+<title>idmAI — ИИ-Менеджер для салонов красоты</title>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="idmAI — ИИ-консультант, который отвечает клиентам салонов красоты и косметологии в мессенджерах и сам записывает их на приём." />
+<meta name="description" content="idmAI — ИИ-Менеджер, который отвечает клиентам салонов красоты и косметологии в мессенджерах и сам записывает их на приём." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet" />
 <style>
   :root {
     --bg: #f6f1e6;
@@ -34,7 +34,7 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  h1, h2, h3, .serif { font-family: 'Playfair Display', Georgia, serif; }
+  h1, h2, h3, .serif { font-family: 'Unbounded', 'Manrope', sans-serif; font-weight: 600; letter-spacing: -0.01em; }
 
   img, svg { max-width: 100%; display: block; }
 
@@ -120,9 +120,9 @@
     background: linear-gradient(155deg, var(--green) 0%, var(--green-deep) 100%);
     display: flex; align-items: center; justify-content: center;
     color: var(--gold);
-    font-family: 'Playfair Display', serif;
+    font-family: 'Unbounded', sans-serif;
     font-weight: 700;
-    font-size: 18px;
+    font-size: 16px;
     flex-shrink: 0;
   }
   .nav-links {
@@ -157,7 +157,7 @@
     font-weight: 600;
     letter-spacing: -0.01em;
   }
-  .hero h1 em { font-style: italic; color: var(--gold-dark); font-weight: 500; }
+  .hero h1 em { font-style: normal; color: var(--gold-dark); font-weight: 600; }
   .hero p.lead {
     font-size: 18px;
     color: var(--muted);
@@ -207,7 +207,7 @@
   /* ---------- Steps ---------- */
   .steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
   .step-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px 26px; }
-  .step-num { width: 42px; height: 42px; border-radius: 12px; background: var(--green-soft); color: var(--green); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 18px; margin-bottom: 20px; }
+  .step-num { width: 42px; height: 42px; border-radius: 12px; background: var(--green-soft); color: var(--green); display: flex; align-items: center; justify-content: center; font-family: 'Unbounded', sans-serif; font-weight: 600; font-size: 15px; margin-bottom: 20px; }
   .step-card h3 { font-size: 17px; margin: 0 0 8px; font-weight: 700; }
   .step-card p { font-size: 14.5px; color: var(--muted); margin: 0; }
 
@@ -263,8 +263,8 @@
   .price-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px; display: flex; flex-direction: column; }
   .price-card.highlight { background: var(--green); color: #f4efe1; border: none; }
   .price-card h3 { font-size: 19px; margin: 0 0 6px; font-weight: 700; }
-  .price-card .price { font-family: 'Playfair Display', serif; font-size: 30px; margin: 8px 0 16px; }
-  .price-card.highlight .price { font-size: 22px; font-style: italic; font-weight: 500; }
+  .price-card .price { font-family: 'Unbounded', sans-serif; font-weight: 600; font-size: 26px; margin: 8px 0 16px; }
+  .price-card.highlight .price { font-size: 19px; font-style: normal; font-weight: 600; }
   .price-card ul { list-style: none; padding: 0; margin: 0 0 24px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
   .price-card li { font-size: 14px; display: flex; gap: 9px; }
   .price-card:not(.highlight) li { color: var(--muted); }
@@ -358,7 +358,7 @@
   <section class="hero">
     <div class="container hero-grid">
       <div>
-        <span class="eyebrow">ИИ-консультант для салонов красоты</span>
+        <span class="eyebrow">ИИ-Менеджер для салонов красоты</span>
         <h1>Консультирует и записывает клиентов,<br>пока администратор <em>отдыхает</em></h1>
         <p class="lead">idmAI — ИИ-бот, который мгновенно отвечает клиентам вашего салона в мессенджерах: рассказывает об услугах и ценах, снимает сомнения и сам оформляет запись. Круглосуточно, без потерянных заявок.</p>
         <div class="hero-actions">
@@ -370,14 +370,14 @@
         <div class="hero-visual__head">
           <div class="hero-visual__avatar"></div>
           <div>
-            <strong>idmAI Assistant</strong>
+            <strong>Алина · ИИ-Менеджер</strong>
             <span><span class="dot-live"></span> на связи</span>
           </div>
         </div>
-        <div class="bubble user">Сколько стоит чистка лица?</div>
-        <div class="bubble bot">4 500 ₽, займёт около часа. Хотите, подберу свободное время на этой неделе?</div>
-        <div class="bubble user">Да, давайте на субботу</div>
-        <div class="bubble bot">Готово! Записала вас на субботу. Пришлю напоминание за час до визита 🌿</div>
+        <div class="bubble user">Сколько стоит лазерная эпиляция голеней?</div>
+        <div class="bubble bot">От 2 500 ₽, сеанс — 30 минут. Обычно для результата нужно 6–10 процедур.</div>
+        <div class="bubble user">Хочу записаться</div>
+        <div class="bubble bot">Отлично! Передаю ваши контакты мастеру — он свяжется с вами и подтвердит удобное время 🌿</div>
       </div>
     </div>
   </section>
@@ -450,7 +450,7 @@
     <div class="container">
       <div class="section-head fade-in">
         <span class="eyebrow">Возможности</span>
-        <h2>Всё, что нужно салону от ИИ-консультанта</h2>
+        <h2>Всё, что нужно салону от ИИ-Менеджера</h2>
       </div>
       <div class="features-grid">
         <div class="feature-card fade-in">
@@ -493,14 +493,14 @@
       <div class="section-head center fade-in" style="margin-left:auto;margin-right:auto;">
         <span class="eyebrow" style="justify-content:center;">Демо</span>
         <h2>Попробуйте прямо сейчас</h2>
-        <p>Это живой ИИ на GigaChat — задайте любой вопрос демо-консультанту salon Aura, как настоящий клиент.</p>
+        <p>Это живой ИИ на GigaChat, который отвечает клиентам действующего салона удаления тату и лазерной эпиляции — задайте любой вопрос, как настоящий клиент.</p>
       </div>
       <div class="demo-grid">
         <div class="demo-chat fade-in">
           <div class="demo-chat__head">
             <div class="demo-chat__avatar"></div>
             <div>
-              <strong>Ева · ИИ-консультант</strong>
+              <strong>Алина · ИИ-Менеджер</strong>
               <span class="status"><span class="dot-live"></span> на связи</span>
             </div>
             <span class="demo-chat__badge">Живой ИИ</span>
@@ -514,7 +514,7 @@
         <div class="demo-tg-card fade-in">
           <div class="tg-icon">✈️</div>
           <h3>Хотите пообщаться в Telegram?</h3>
-          <p>Тот же ИИ-консультант, только в привычном мессенджере — напишите ему прямо сейчас и проверьте на деле.</p>
+          <p>Тот же ИИ-Менеджер, только в привычном мессенджере — напишите ему прямо сейчас и проверьте на деле.</p>
           <a href="https://t.me/aitesttttttbot" target="_blank" rel="noopener" class="btn btn-primary">Открыть демо-бота</a>
         </div>
       </div>
@@ -646,7 +646,7 @@
       <a href="https://t.me/ildar4ik1707" target="_blank" rel="noopener" class="btn btn-primary">Написать в Telegram</a>
       <a href="https://wa.me/79337659731" target="_blank" rel="noopener" class="btn btn-wa">Написать в WhatsApp</a>
     </div>
-    <div class="footer-bottom">© idmAI — ИИ-консультант для салонов красоты</div>
+    <div class="footer-bottom">© idmAI — ИИ-Менеджер для салонов красоты</div>
   </div>
 </footer>
 
@@ -679,7 +679,7 @@
   // файле не хранится, он остаётся только на сервере.
   const API_ENDPOINT = 'https://YOUR-VERCEL-PROJECT.vercel.app/api/chat';
 
-  const GREETING = 'Здравствуйте! Я Ева — ИИ-консультант демо-салона Salon Aura. Отвечу на вопросы об услугах и ценах и запишу вас на приём. Это реальный ИИ на GigaChat — попробуйте задать любой вопрос!';
+  const GREETING = 'Здравствуйте! 🌸 Меня зовут Алина, я ИИ-Менеджер салона. Помогу разобраться с удалением тату и лазерной эпиляцией: расскажу про услуги, цены, как проходят процедуры и подскажу по мастерам. Расскажите, что вас интересует?';
 
   const chatMessages = document.getElementById('chatMessages');
   const chatForm = document.getElementById('chatForm');
