@@ -1,0 +1,752 @@
+<title>idmAI — ИИ-консультант для салонов красоты</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="idmAI — ИИ-консультант, который отвечает клиентам салонов красоты и косметологии в мессенджерах и сам записывает их на приём." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f6f1e6;
+    --bg-soft: #efe7d6;
+    --card: #fffdf8;
+    --ink: #21281f;
+    --muted: #6c6a5d;
+    --green: #1d3a30;
+    --green-deep: #142720;
+    --green-soft: rgba(29, 58, 48, 0.08);
+    --gold: #a9793f;
+    --gold-dark: #8d6330;
+    --border: rgba(29, 58, 48, 0.14);
+    --shadow: 0 20px 50px -25px rgba(20, 39, 32, 0.35);
+    --radius: 20px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, .serif { font-family: 'Playfair Display', Georgia, serif; }
+
+  img, svg { max-width: 100%; display: block; }
+
+  a { color: inherit; }
+
+  .container {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  section { position: relative; }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+  }
+  .eyebrow::before {
+    content: '';
+    width: 22px;
+    height: 1.5px;
+    background: var(--gold-dark);
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 26px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    white-space: nowrap;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary { background: var(--gold); color: #fff8ee; box-shadow: 0 14px 26px -12px rgba(169, 121, 63, 0.55); }
+  .btn-primary:hover { background: var(--gold-dark); }
+  .btn-outline { background: transparent; border-color: var(--green); color: var(--green); }
+  .btn-outline:hover { background: var(--green); color: #fff; }
+  .btn-dark { background: var(--green); color: #f4efe1; box-shadow: 0 14px 26px -12px rgba(20, 39, 32, 0.5); }
+  .btn-dark:hover { background: var(--green-deep); }
+  .btn-ghost-link { font-size: 13.5px; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; font-weight: 600; }
+  .btn-block { width: 100%; }
+  .btn-sm { padding: 11px 18px; font-size: 14px; }
+
+  /* ---------- Header ---------- */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(246, 241, 230, 0.86);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: -0.01em;
+  }
+  .brand-mark {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: linear-gradient(155deg, var(--green) 0%, var(--green-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .nav-links {
+    display: flex;
+    gap: 30px;
+    list-style: none;
+    margin: 0; padding: 0;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .nav-links a { text-decoration: none; color: var(--ink); opacity: 0.75; transition: opacity 0.15s; }
+  .nav-links a:hover { opacity: 1; }
+  .nav-actions { display: flex; align-items: center; gap: 12px; }
+  .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 6px; }
+  .nav-toggle span { display: block; width: 24px; height: 2px; background: var(--ink); margin: 5px 0; border-radius: 2px; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    padding: 90px 0 100px;
+    overflow: hidden;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 60px;
+    align-items: center;
+  }
+  .hero h1 {
+    font-size: clamp(38px, 5vw, 58px);
+    line-height: 1.08;
+    margin: 22px 0 22px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .hero h1 em { font-style: italic; color: var(--gold-dark); font-weight: 500; }
+  .hero p.lead {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 540px;
+    margin: 0 0 34px;
+  }
+  .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+
+  .hero-visual {
+    background: var(--card);
+    border-radius: 28px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    padding: 22px;
+  }
+  .hero-visual__head { display: flex; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+  .hero-visual__avatar { width: 40px; height: 40px; border-radius: 12px; background: var(--green); }
+  .hero-visual__head strong { display: block; font-size: 15px; }
+  .hero-visual__head span { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }
+  .dot-live { width: 7px; height: 7px; border-radius: 50%; background: #4a9a6e; display: inline-block; }
+  .bubble { border-radius: 16px; padding: 12px 16px; font-size: 14.5px; margin-bottom: 10px; max-width: 88%; }
+  .bubble.user { background: var(--green); color: #f4efe1; margin-left: auto; border-bottom-right-radius: 4px; }
+  .bubble.bot { background: var(--bg-soft); color: var(--ink); border-bottom-left-radius: 4px; }
+
+  /* ---------- Section shells ---------- */
+  .section { padding: 96px 0; }
+  .section-alt { background: var(--bg-soft); }
+  .section-head { max-width: 640px; margin-bottom: 52px; }
+  .section-head h2 { font-size: clamp(28px, 3.4vw, 40px); font-weight: 600; margin: 16px 0 14px; letter-spacing: -0.01em; }
+  .section-head p { color: var(--muted); font-size: 17px; margin: 0; }
+  .section-head.center { margin-left: auto; margin-right: auto; text-align: center; }
+
+  /* ---------- Problem / Solution ---------- */
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .compare-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 34px; }
+  .compare-card.bad { background: #f2ece0; }
+  .compare-card.good { background: var(--green); color: #f4efe1; box-shadow: var(--shadow); }
+  .compare-card h3 { font-size: 21px; margin: 0 0 18px; font-weight: 600; }
+  .compare-card ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; }
+  .compare-card li { display: flex; gap: 12px; font-size: 15.5px; }
+  .compare-card.good li { color: rgba(244, 239, 225, 0.92); }
+  .compare-card:not(.good) li { color: var(--muted); }
+  .mark { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; margin-top: 1px; }
+  .mark.x { background: rgba(140, 70, 40, 0.14); color: #8c4628; }
+  .mark.v { background: rgba(244, 239, 225, 0.16); color: #f4efe1; }
+
+  /* ---------- Steps ---------- */
+  .steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+  .step-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px 26px; }
+  .step-num { width: 42px; height: 42px; border-radius: 12px; background: var(--green-soft); color: var(--green); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-weight: 700; font-size: 18px; margin-bottom: 20px; }
+  .step-card h3 { font-size: 17px; margin: 0 0 8px; font-weight: 700; }
+  .step-card p { font-size: 14.5px; color: var(--muted); margin: 0; }
+
+  /* ---------- Features ---------- */
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .feature-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px; }
+  .feature-icon { width: 46px; height: 46px; border-radius: 13px; background: var(--green); color: var(--gold); display: flex; align-items: center; justify-content: center; margin-bottom: 18px; font-size: 20px; }
+  .feature-card h3 { font-size: 17px; margin: 0 0 8px; font-weight: 700; }
+  .feature-card p { font-size: 14.5px; color: var(--muted); margin: 0; }
+
+  /* ---------- Demo ---------- */
+  .demo-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 26px; align-items: stretch; }
+  .demo-chat {
+    background: var(--card); border: 1px solid var(--border); border-radius: 26px;
+    box-shadow: var(--shadow); display: flex; flex-direction: column; overflow: hidden; min-height: 520px;
+  }
+  .demo-chat__head { display: flex; align-items: center; gap: 12px; padding: 20px 24px; border-bottom: 1px solid var(--border); }
+  .demo-chat__avatar { width: 42px; height: 42px; border-radius: 12px; background: var(--green); flex-shrink: 0; }
+  .demo-chat__head strong { display: block; font-size: 16px; }
+  .demo-chat__head .status { font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .demo-chat__badge { margin-left: auto; font-size: 11.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--gold-dark); background: rgba(169,121,63,0.12); padding: 6px 10px; border-radius: 999px; }
+  .demo-chat__messages { flex: 1; padding: 22px 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; max-height: 420px; }
+  .demo-chat__messages .bubble { max-width: 82%; font-size: 15px; }
+  .bubble.typing { display: flex; gap: 4px; padding: 15px 18px; }
+  .bubble.typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); opacity: 0.5; animation: blink 1.2s infinite ease-in-out; }
+  .bubble.typing span:nth-child(2) { animation-delay: 0.2s; }
+  .bubble.typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%, 80%, 100% { opacity: 0.25; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
+  .bubble.error-bubble { background: #f4e2da; color: #7a3a22; }
+  .demo-chat__form { display: flex; gap: 10px; padding: 16px 20px; border-top: 1px solid var(--border); }
+  .demo-chat__form input {
+    flex: 1; border: 1px solid var(--border); background: var(--bg-soft); border-radius: 999px;
+    padding: 13px 18px; font-size: 15px; font-family: inherit; color: var(--ink); outline: none;
+  }
+  .demo-chat__form input:focus { border-color: var(--gold); }
+  .demo-chat__form button {
+    width: 46px; height: 46px; border-radius: 50%; border: none; background: var(--green); color: var(--gold);
+    display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: background 0.15s;
+  }
+  .demo-chat__form button:hover { background: var(--green-deep); }
+  .demo-chat__form button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .demo-tg-card {
+    background: var(--green); color: #f4efe1; border-radius: 26px; padding: 40px 32px;
+    display: flex; flex-direction: column; justify-content: center; align-items: flex-start; box-shadow: var(--shadow);
+  }
+  .demo-tg-card .tg-icon { width: 56px; height: 56px; border-radius: 16px; background: rgba(244, 239, 225, 0.12); display: flex; align-items: center; justify-content: center; margin-bottom: 22px; font-size: 26px; }
+  .demo-tg-card h3 { font-size: 24px; margin: 0 0 12px; font-weight: 600; }
+  .demo-tg-card p { color: rgba(244, 239, 225, 0.78); font-size: 15px; margin: 0 0 26px; }
+
+  /* ---------- Pricing ---------- */
+  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .price-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px; display: flex; flex-direction: column; }
+  .price-card.highlight { background: var(--green); color: #f4efe1; border: none; }
+  .price-card h3 { font-size: 19px; margin: 0 0 6px; font-weight: 700; }
+  .price-card .price { font-family: 'Playfair Display', serif; font-size: 30px; margin: 8px 0 16px; }
+  .price-card.highlight .price { font-size: 22px; font-style: italic; font-weight: 500; }
+  .price-card ul { list-style: none; padding: 0; margin: 0 0 24px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .price-card li { font-size: 14px; display: flex; gap: 9px; }
+  .price-card:not(.highlight) li { color: var(--muted); }
+  .price-card.highlight li { color: rgba(244, 239, 225, 0.85); }
+  .price-card .crm-note { font-size: 13px; font-weight: 600; color: var(--green); background: var(--green-soft); border-radius: 10px; padding: 8px 12px; margin-bottom: 18px; }
+  .price-card.highlight .crm-note { background: rgba(244,239,225,0.12); color: #f4efe1; }
+
+  /* ---------- Cases ---------- */
+  .case-placeholder {
+    background: var(--card); border: 1.5px dashed var(--border); border-radius: var(--radius);
+    padding: 56px 40px; text-align: center;
+  }
+  .case-placeholder p { color: var(--muted); max-width: 520px; margin: 14px auto 26px; font-size: 15.5px; }
+
+  /* ---------- FAQ ---------- */
+  .faq-list { max-width: 780px; }
+  .faq-item { border-bottom: 1px solid var(--border); }
+  .faq-item summary {
+    list-style: none; cursor: pointer; padding: 22px 0; font-weight: 700; font-size: 17px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after { content: '+'; font-size: 22px; color: var(--gold-dark); font-weight: 400; transition: transform 0.2s; flex-shrink: 0; }
+  .faq-item[open] summary::after { transform: rotate(45deg); }
+  .faq-item .faq-a { color: var(--muted); padding: 0 0 24px; font-size: 15.5px; max-width: 640px; }
+
+  /* ---------- Footer ---------- */
+  footer { background: var(--green); color: #f4efe1; padding: 80px 0 40px; }
+  .footer-inner { text-align: center; max-width: 620px; margin: 0 auto; }
+  footer h2 { font-size: clamp(28px, 3.6vw, 38px); font-weight: 600; margin: 0 0 16px; }
+  footer p { color: rgba(244, 239, 225, 0.75); font-size: 16px; margin: 0 0 34px; }
+  .footer-actions { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 56px; }
+  .footer-actions .btn-primary { background: var(--gold); }
+  .footer-actions .btn-wa { background: rgba(244, 239, 225, 0.1); color: #f4efe1; border: 1.5px solid rgba(244, 239, 225, 0.35); }
+  .footer-actions .btn-wa:hover { background: rgba(244, 239, 225, 0.18); }
+  .footer-bottom { border-top: 1px solid rgba(244, 239, 225, 0.15); padding-top: 26px; text-align: center; font-size: 13px; color: rgba(244, 239, 225, 0.5); }
+
+  /* ---------- Fade in ---------- */
+  .fade-in { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .fade-in.in-view { opacity: 1; transform: translateY(0); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 980px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-visual { max-width: 480px; }
+    .compare-grid, .demo-grid { grid-template-columns: 1fr; }
+    .steps-grid { grid-template-columns: repeat(2, 1fr); }
+    .features-grid { grid-template-columns: repeat(2, 1fr); }
+    .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 720px) {
+    .nav-links, .nav-actions .btn-outline { display: none; }
+    .nav-toggle { display: block; }
+    .nav.open .nav-links {
+      display: flex; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg);
+      flex-direction: column; padding: 20px 24px; gap: 18px; border-bottom: 1px solid var(--border);
+    }
+    .steps-grid, .features-grid, .pricing-grid { grid-template-columns: 1fr; }
+    .section { padding: 64px 0; }
+    .hero { padding: 56px 0 64px; }
+    .hero-actions .btn { width: 100%; }
+  }
+</style>
+
+<header>
+  <nav class="nav" id="nav">
+    <a href="#top" class="brand">
+      <span class="brand-mark">i</span>
+      idmAI
+    </a>
+    <ul class="nav-links">
+      <li><a href="#product">Продукт</a></li>
+      <li><a href="#how">Как работает</a></li>
+      <li><a href="#pricing">Цены</a></li>
+      <li><a href="#cases">Кейсы</a></li>
+      <li><a href="#contacts">Контакты</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="#demo" class="btn btn-outline btn-sm">Посмотреть демо</a>
+      <a href="https://t.me/ildar4ik1707" target="_blank" rel="noopener" class="btn btn-dark btn-sm">Написать</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Меню">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <span class="eyebrow">ИИ-консультант для салонов красоты</span>
+        <h1>Консультирует и записывает клиентов,<br>пока администратор <em>отдыхает</em></h1>
+        <p class="lead">idmAI — ИИ-бот, который мгновенно отвечает клиентам вашего салона в мессенджерах: рассказывает об услугах и ценах, снимает сомнения и сам оформляет запись. Круглосуточно, без потерянных заявок.</p>
+        <div class="hero-actions">
+          <a href="#demo" class="btn btn-primary">Посмотреть демо</a>
+          <a href="#pricing" class="btn btn-outline">Смотреть цены</a>
+        </div>
+      </div>
+      <div class="hero-visual fade-in">
+        <div class="hero-visual__head">
+          <div class="hero-visual__avatar"></div>
+          <div>
+            <strong>idmAI Assistant</strong>
+            <span><span class="dot-live"></span> на связи</span>
+          </div>
+        </div>
+        <div class="bubble user">Сколько стоит чистка лица?</div>
+        <div class="bubble bot">4 500 ₽, займёт около часа. Хотите, подберу свободное время на этой неделе?</div>
+        <div class="bubble user">Да, давайте на субботу</div>
+        <div class="bubble bot">Готово! Записала вас на субботу. Пришлю напоминание за час до визита 🌿</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM / SOLUTION -->
+  <section class="section" id="product">
+    <div class="container">
+      <div class="section-head fade-in">
+        <span class="eyebrow">Проблема и решение</span>
+        <h2>Администратор не должен отвечать на одно и то же 50 раз в день</h2>
+        <p>Пока он занят на ресепшене или отвечает одному клиенту, десятки других пишут в мессенджеры и ждут — а часть просто уходит к конкурентам.</p>
+      </div>
+      <div class="compare-grid">
+        <div class="compare-card bad fade-in">
+          <h3>Сейчас</h3>
+          <ul>
+            <li><span class="mark x">✕</span> Клиенты ждут ответа часами, особенно вечером и в выходные</li>
+            <li><span class="mark x">✕</span> Администратор отвечает на одни и те же вопросы про цены и услуги</li>
+            <li><span class="mark x">✕</span> Часть заявок теряется — клиент просто не дождался и ушёл</li>
+            <li><span class="mark x">✕</span> Запись фиксируется вручную, с ошибками и задержками</li>
+          </ul>
+        </div>
+        <div class="compare-card good fade-in">
+          <h3>С idmAI</h3>
+          <ul>
+            <li><span class="mark v">✓</span> Ответ клиенту приходит за секунды, в любое время суток</li>
+            <li><span class="mark v">✓</span> Бот знает все услуги, цены и нюансы наизусть</li>
+            <li><span class="mark v">✓</span> Ни одна заявка не теряется — бот доводит диалог до записи</li>
+            <li><span class="mark v">✓</span> Запись и данные клиента сразу попадают в вашу CRM</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section section-alt" id="how">
+    <div class="container">
+      <div class="section-head fade-in">
+        <span class="eyebrow">Как это работает</span>
+        <h2>От первого сообщения до записи в CRM — без участия администратора</h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card fade-in">
+          <div class="step-num">01</div>
+          <h3>Клиент пишет</h3>
+          <p>В Telegram, WhatsApp, Max или ВКонтакте — там, где ему удобно.</p>
+        </div>
+        <div class="step-card fade-in">
+          <div class="step-num">02</div>
+          <h3>ИИ отвечает мгновенно</h3>
+          <p>По актуальной базе услуг, цен и расписания вашего салона.</p>
+        </div>
+        <div class="step-card fade-in">
+          <div class="step-num">03</div>
+          <h3>Ведёт диалог по-человечески</h3>
+          <p>Уточняет детали, снимает сомнения, помнит весь контекст переписки.</p>
+        </div>
+        <div class="step-card fade-in">
+          <div class="step-num">04</div>
+          <h3>Оформляет запись</h3>
+          <p>Передаёт заявку и данные клиента в вашу CRM или систему записи.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head fade-in">
+        <span class="eyebrow">Возможности</span>
+        <h2>Всё, что нужно салону от ИИ-консультанта</h2>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card fade-in">
+          <div class="feature-icon">💬</div>
+          <h3>Мессенджеры</h3>
+          <p>Работает в Telegram, WhatsApp, Max и VK — там, где уже общаются ваши клиенты.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">💆</div>
+          <h3>Знает услуги и цены</h3>
+          <p>Отвечает точно по вашему актуальному прайсу, без придуманных фактов.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">🧠</div>
+          <h3>Помнит контекст</h3>
+          <p>Ведёт диалог как живой администратор, не переспрашивая то, что клиент уже сказал.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">🔗</div>
+          <h3>Интеграция с CRM</h3>
+          <p>Y-Clients, DIKIDI, amoCRM — заявки и клиенты заносятся автоматически.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">⏰</div>
+          <h3>Напоминания</h3>
+          <p>Сам напоминает клиентам о визите, снижая процент неявок.</p>
+        </div>
+        <div class="feature-card fade-in">
+          <div class="feature-icon">🌙</div>
+          <h3>Круглосуточно</h3>
+          <p>Отвечает ночью, в выходные и праздники — без выгорания и больничных.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO -->
+  <section class="section section-alt" id="demo">
+    <div class="container">
+      <div class="section-head center fade-in" style="margin-left:auto;margin-right:auto;">
+        <span class="eyebrow" style="justify-content:center;">Демо</span>
+        <h2>Попробуйте прямо сейчас</h2>
+        <p>Это живой ИИ на GigaChat — задайте любой вопрос демо-консультанту salon Aura, как настоящий клиент.</p>
+      </div>
+      <div class="demo-grid">
+        <div class="demo-chat fade-in">
+          <div class="demo-chat__head">
+            <div class="demo-chat__avatar"></div>
+            <div>
+              <strong>Ева · ИИ-консультант</strong>
+              <span class="status"><span class="dot-live"></span> на связи</span>
+            </div>
+            <span class="demo-chat__badge">Живой ИИ</span>
+          </div>
+          <div class="demo-chat__messages" id="chatMessages"></div>
+          <form class="demo-chat__form" id="chatForm">
+            <input type="text" id="chatInput" placeholder="Напишите сообщение…" autocomplete="off" maxlength="500" />
+            <button type="submit" id="chatSend" aria-label="Отправить">➤</button>
+          </form>
+        </div>
+        <div class="demo-tg-card fade-in">
+          <div class="tg-icon">✈️</div>
+          <h3>Хотите пообщаться в Telegram?</h3>
+          <p>Тот же ИИ-консультант, только в привычном мессенджере — напишите ему прямо сейчас и проверьте на деле.</p>
+          <a href="https://t.me/aitesttttttbot" target="_blank" rel="noopener" class="btn btn-primary">Открыть демо-бота</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="section" id="pricing">
+    <div class="container">
+      <div class="section-head fade-in">
+        <span class="eyebrow">Цены</span>
+        <h2>Стоимость подключения</h2>
+        <p>Разовая настройка под ваш салон — без абонентской платы за сам факт работы бота.</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="price-card fade-in">
+          <h3>Telegram чат-бот</h3>
+          <div class="price">от 10 000 ₽</div>
+          <div class="crm-note">Работает с вашей CRM/системой записи — заявки и данные клиентов заносятся автоматически</div>
+          <ul>
+            <li>— Консультация по услугам и ценам</li>
+            <li>— Ответы на частые вопросы</li>
+            <li>— Передача заявки / интеграция с CRM</li>
+          </ul>
+        </div>
+        <div class="price-card fade-in">
+          <h3>WhatsApp чат-бот</h3>
+          <div class="price">от 12 000 ₽</div>
+          <div class="crm-note">Работает с вашей CRM/системой записи — заявки и данные клиентов заносятся автоматически</div>
+          <ul>
+            <li>— Консультация по услугам и ценам</li>
+            <li>— Ответы на частые вопросы</li>
+            <li>— Интеграция с CRM</li>
+          </ul>
+        </div>
+        <div class="price-card fade-in">
+          <h3>Max чат-бот</h3>
+          <div class="price">от 12 000 ₽</div>
+          <div class="crm-note">Работает с вашей CRM/системой записи — заявки и данные клиентов заносятся автоматически</div>
+          <ul>
+            <li>— Консультация по услугам и ценам</li>
+            <li>— Ответы на частые вопросы</li>
+            <li>— Интеграция с CRM</li>
+          </ul>
+        </div>
+        <div class="price-card fade-in">
+          <h3>VK чат-бот</h3>
+          <div class="price">от 10 000 ₽</div>
+          <div class="crm-note">Работает с вашей CRM/системой записи — заявки и данные клиентов заносятся автоматически</div>
+          <ul>
+            <li>— Консультация по услугам и ценам</li>
+            <li>— Ответы на частые вопросы</li>
+            <li>— Интеграция с CRM</li>
+          </ul>
+        </div>
+        <div class="price-card highlight fade-in">
+          <h3>WhatsApp + Max + Telegram</h3>
+          <div class="price">Обсудим индивидуально</div>
+          <ul>
+            <li>— Все три мессенджера сразу</li>
+            <li>— Прямая интеграция с вашей системой записи</li>
+            <li>— Единая база знаний и история диалогов</li>
+          </ul>
+          <a href="https://t.me/ildar4ik1707" target="_blank" rel="noopener" class="btn btn-primary btn-block">Написать</a>
+        </div>
+        <div class="price-card fade-in">
+          <h3>Другие мессенджеры</h3>
+          <div class="price">Обсудим индивидуально</div>
+          <ul>
+            <li>— Viber, iMessage, чат на сайте и другое</li>
+            <li>— Под задачи и парк систем вашего салона</li>
+          </ul>
+          <a href="https://t.me/ildar4ik1707" target="_blank" rel="noopener" class="btn btn-dark btn-block">Написать</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CASES -->
+  <section class="section section-alt" id="cases">
+    <div class="container">
+      <div class="section-head fade-in">
+        <span class="eyebrow">Кейсы</span>
+        <h2>Примеры внедрения</h2>
+      </div>
+      <div class="case-placeholder fade-in">
+        <h3 class="serif" style="margin:0;font-size:22px;font-weight:600;">Раздел наполняется</h3>
+        <p>Здесь скоро появятся реальные примеры внедрения idmAI — в том числе демо-лендинг салона HiSkin Clinic и другие проекты. А пока можно посмотреть, как бот ведёт диалог, в демо выше или в Telegram.</p>
+        <a href="https://t.me/aitesttttttbot" target="_blank" rel="noopener" class="btn btn-outline">Попробовать демо-бота</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" id="faq">
+    <div class="container">
+      <div class="section-head fade-in">
+        <span class="eyebrow">FAQ</span>
+        <h2>Частые вопросы</h2>
+      </div>
+      <div class="faq-list fade-in">
+        <details class="faq-item">
+          <summary>Сколько времени занимает внедрение?</summary>
+          <div class="faq-a">Обычно 3–5 рабочих дней: собираем базу услуг и цен, настраиваем бота под ваш мессенджер и стиль общения, подключаем CRM и тестируем на реальных диалогах.</div>
+        </details>
+        <details class="faq-item">
+          <summary>Безопасны ли данные клиентов?</summary>
+          <div class="faq-a">Да. Токены и ключи доступа хранятся на сервере, а не в коде или на сайте. Переписки и контакты клиентов не передаются третьим лицам и используются только для работы вашего бота.</div>
+        </details>
+        <details class="faq-item">
+          <summary>Можно ли самим менять ответы бота?</summary>
+          <div class="faq-a">Да, вы сможете обновлять базу услуг, цен и правил общения самостоятельно — без обращения к разработчику и без остановки бота.</div>
+        </details>
+        <details class="faq-item">
+          <summary>Что если поменяются цены или услуги?</summary>
+          <div class="faq-a">Достаточно обновить таблицу с ценами и услугами — бот подхватит изменения автоматически и начнёт отвечать по новым данным.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer id="contacts">
+  <div class="container footer-inner fade-in">
+    <h2>Готовы избавить администратора от рутины?</h2>
+    <p>Напишите — обсудим, какой мессенджер и какая интеграция подойдут именно вашему салону.</p>
+    <div class="footer-actions">
+      <a href="https://t.me/ildar4ik1707" target="_blank" rel="noopener" class="btn btn-primary">Написать в Telegram</a>
+      <a href="https://wa.me/79337659731" target="_blank" rel="noopener" class="btn btn-wa">Написать в WhatsApp</a>
+    </div>
+    <div class="footer-bottom">© idmAI — ИИ-консультант для салонов красоты</div>
+  </div>
+</footer>
+
+<script>
+  // ---------- Мобильное меню ----------
+  const nav = document.getElementById('nav');
+  const navToggle = document.getElementById('navToggle');
+  navToggle.addEventListener('click', () => nav.classList.toggle('open'));
+  document.querySelectorAll('.nav-links a').forEach((a) =>
+    a.addEventListener('click', () => nav.classList.remove('open'))
+  );
+
+  // ---------- Fade-in при скролле ----------
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.15 }
+  );
+  document.querySelectorAll('.fade-in').forEach((el) => observer.observe(el));
+
+  // ---------- Демо-чат: реальный запрос к бэкенду с GigaChat ----------
+  // После деплоя бэкенда (см. README.md) замените адрес ниже на ваш реальный
+  // URL вида https://ваш-проект.vercel.app/api/chat — токен GigaChat в этом
+  // файле не хранится, он остаётся только на сервере.
+  const API_ENDPOINT = 'https://YOUR-VERCEL-PROJECT.vercel.app/api/chat';
+
+  const GREETING = 'Здравствуйте! Я Ева — ИИ-консультант демо-салона Salon Aura. Отвечу на вопросы об услугах и ценах и запишу вас на приём. Это реальный ИИ на GigaChat — попробуйте задать любой вопрос!';
+
+  const chatMessages = document.getElementById('chatMessages');
+  const chatForm = document.getElementById('chatForm');
+  const chatInput = document.getElementById('chatInput');
+  const chatSend = document.getElementById('chatSend');
+
+  let conversation = [];
+
+  function addBubble(role, text) {
+    const div = document.createElement('div');
+    div.className = 'bubble ' + (role === 'user' ? 'user' : role === 'error' ? 'bot error-bubble' : 'bot');
+    div.textContent = text;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return div;
+  }
+
+  function addTyping() {
+    const div = document.createElement('div');
+    div.className = 'bubble bot typing';
+    div.innerHTML = '<span></span><span></span><span></span>';
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return div;
+  }
+
+  addBubble('bot', GREETING);
+
+  chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const text = chatInput.value.trim();
+    if (!text) return;
+
+    addBubble('user', text);
+    conversation.push({ role: 'user', content: text });
+    conversation = conversation.slice(-20);
+
+    chatInput.value = '';
+    chatInput.disabled = true;
+    chatSend.disabled = true;
+    const typingEl = addTyping();
+
+    try {
+      const res = await fetch(API_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: conversation }),
+      });
+      const data = await res.json();
+      typingEl.remove();
+
+      if (!res.ok || !data.reply) {
+        throw new Error(data.error || 'Пустой ответ сервера');
+      }
+
+      addBubble('bot', data.reply);
+      conversation.push({ role: 'assistant', content: data.reply });
+    } catch (err) {
+      typingEl.remove();
+      addBubble(
+        'error',
+        'Не получилось получить ответ — похоже, бэкенд ещё не подключён или временно недоступен. Попробуйте демо в Telegram: t.me/aitesttttttbot'
+      );
+    } finally {
+      chatInput.disabled = false;
+      chatSend.disabled = false;
+      chatInput.focus();
+    }
+  });
+</script>

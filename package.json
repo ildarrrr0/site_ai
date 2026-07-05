@@ -1,0 +1,9 @@
+{
+  "name": "idmai-landing",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Лендинг idmAI (GitHub Pages) + серверная функция демо-бота (Vercel Functions)",
+  "engines": {
+    "node": ">=18"
+  }
+}
