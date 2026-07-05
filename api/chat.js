@@ -26,7 +26,24 @@ const rateLimitBuckets = new Map();
 let cachedToken = "";
 let cachedTokenExpiresAt = 0;
 
-function httpsRequestRaw(url, { headers = {}, body = "" } = {}) {
+// Сетевые ошибки, на которых имеет смысл повторить запрос: TLS/соединение
+// периодически рвётся именно на стороне Сбера (тот же случай, что и
+// комментарий "UNEXPECTED_EOF" в оригинальном gigachat_client.py).
+const _RETRYABLE_CODES = new Set([
+  "ECONNRESET",
+  "ECONNREFUSED",
+  "ETIMEDOUT",
+  "EPIPE",
+  "EHOSTUNREACH",
+]);
+const _MAX_RETRIES = 3;
+const _RETRY_DELAY_MS = 1500;
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function httpsRequestOnce(url, { headers = {}, body = "" } = {}) {
   return new Promise((resolve, reject) => {
     const u = new URL(url);
     const req = https.request(
@@ -52,6 +69,22 @@ function httpsRequestRaw(url, { headers = {}, body = "" } = {}) {
     req.write(body);
     req.end();
   });
+}
+
+async function httpsRequestRaw(url, options) {
+  let lastErr;
+  for (let attempt = 1; attempt <= _MAX_RETRIES; attempt++) {
+    try {
+      return await httpsRequestOnce(url, options);
+    } catch (err) {
+      lastErr = err;
+      const retryable = _RETRYABLE_CODES.has(err.code) || /socket hang up/i.test(err.message || "");
+      console.error(`Сетевая ошибка GigaChat (попытка ${attempt}/${_MAX_RETRIES}):`, err.code || err.message);
+      if (!retryable || attempt === _MAX_RETRIES) break;
+      await sleep(_RETRY_DELAY_MS);
+    }
+  }
+  throw lastErr;
 }
 
 async function getAccessToken() {
