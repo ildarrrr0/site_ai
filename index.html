@@ -25,6 +25,8 @@
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
 
+  html, body { overflow-x: hidden; }
+
   body {
     margin: 0;
     background: var(--bg);
@@ -32,9 +34,10 @@
     font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
+    width: 100%;
   }
 
-  h1, h2, h3, .serif { font-family: 'Unbounded', 'Manrope', sans-serif; font-weight: 600; letter-spacing: -0.01em; }
+  h1, h2, h3, .serif { font-family: 'Unbounded', 'Manrope', sans-serif; font-weight: 600; letter-spacing: -0.01em; overflow-wrap: break-word; }
 
   img, svg { max-width: 100%; display: block; }
 
@@ -239,7 +242,7 @@
   .bubble.error-bubble { background: #f4e2da; color: #7a3a22; }
   .demo-chat__form { display: flex; gap: 10px; padding: 16px 20px; border-top: 1px solid var(--border); }
   .demo-chat__form input {
-    flex: 1; border: 1px solid var(--border); background: var(--bg-soft); border-radius: 999px;
+    flex: 1; min-width: 0; border: 1px solid var(--border); background: var(--bg-soft); border-radius: 999px;
     padding: 13px 18px; font-size: 15px; font-family: inherit; color: var(--ink); outline: none;
   }
   .demo-chat__form input:focus { border-color: var(--gold); }
@@ -325,6 +328,12 @@
     .section { padding: 64px 0; }
     .hero { padding: 56px 0 64px; }
     .hero-actions .btn { width: 100%; }
+  }
+  @media (max-width: 480px) {
+    .container { padding: 0 20px; }
+    .hero h1 { font-size: clamp(24px, 8vw, 36px); }
+    .section-head h2 { font-size: clamp(22px, 7vw, 40px); }
+    footer h2 { font-size: clamp(22px, 7vw, 38px); }
   }
 </style>
 
