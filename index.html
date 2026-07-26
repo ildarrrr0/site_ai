@@ -274,6 +274,23 @@
   .price-card.highlight li { color: rgba(244, 239, 225, 0.85); }
   .price-card .crm-note { font-size: 13px; font-weight: 600; color: var(--green); background: var(--green-soft); border-radius: 10px; padding: 8px 12px; margin-bottom: 18px; }
   .price-card.highlight .crm-note { background: rgba(244,239,225,0.12); color: #f4efe1; }
+  .price-card .price-badge { display: inline-flex; align-self: flex-start; font-size: 11.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 5px 12px; border-radius: 999px; margin-bottom: 14px; }
+  .price-card:not(.highlight) .price-badge { color: var(--gold-dark); background: rgba(169, 121, 63, 0.12); }
+  .price-card.highlight .price-badge { color: var(--green-deep); background: var(--gold); }
+  .price-note { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .price-card .price-note { margin: 4px 0 18px; }
+
+  .pricing-other { margin-top: 40px; padding-top: 36px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  .pricing-other h3 { font-size: 19px; margin: 0 0 6px; font-weight: 700; }
+  .pricing-other p { color: var(--muted); font-size: 15px; margin: 0; max-width: 520px; }
+
+  .pricing-support { margin-top: 22px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius); padding: 34px; }
+  .pricing-support h3 { font-size: 19px; margin: 0 0 10px; font-weight: 700; }
+  .pricing-support > p { color: var(--muted); font-size: 15px; margin: 0 0 22px; max-width: 640px; }
+  .pricing-support .support-sub { font-size: 13px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 12px; }
+  .pricing-support ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+  .pricing-support li { font-size: 14.5px; color: var(--muted); display: flex; gap: 9px; }
+  .pricing-support .price-note { margin: 18px 0 0; }
 
   /* ---------- FAQ ---------- */
   .faq-list { max-width: 780px; }
@@ -384,7 +401,7 @@
         <div class="bubble user">Сколько стоит лазерная эпиляция голеней?</div>
         <div class="bubble bot">От 2 500 ₽, сеанс — 30 минут. Обычно для результата нужно 6–10 процедур.</div>
         <div class="bubble user">Хочу записаться</div>
-        <div class="bubble bot">Отлично! Передаю ваши контакты мастеру — он свяжется с вами и подтвердит удобное время 🌿</div>
+        <div class="bubble bot">Записала вас на четверг, 15:00, к Марине. Напомню за сутки 🌿</div>
       </div>
     </div>
   </section>
@@ -538,68 +555,89 @@
       </div>
       <div class="pricing-grid">
         <div class="price-card fade-in">
-          <h3>Telegram чат-бот</h3>
-          <div class="price">от 10 000 ₽</div>
-          <div class="crm-note">Работает с вашей CRM/системой записи — заявки и данные клиентов заносятся автоматически</div>
+          <h3>Старт</h3>
+          <div class="price">13 000 ₽</div>
+          <div class="crm-note">Запись клиентов через администратора — без интеграции с CRM</div>
           <ul>
+            <li>— 1 мессенджер на выбор (Telegram, WhatsApp, Max или VK)</li>
             <li>— Консультация по услугам и ценам</li>
             <li>— Ответы на частые вопросы</li>
-            <li>— Передача заявки / интеграция с CRM</li>
+            <li>— Передача заявки администратору</li>
           </ul>
           <a href="https://t.me/davletmuratovai" target="_blank" rel="noopener" class="btn btn-dark btn-block">Написать</a>
         </div>
         <div class="price-card fade-in">
-          <h3>WhatsApp чат-бот</h3>
-          <div class="price">от 12 000 ₽</div>
+          <h3>Базовый</h3>
+          <div class="price">18 000 ₽</div>
           <div class="crm-note">Работает с вашей CRM/системой записи — заявки и данные клиентов заносятся автоматически</div>
           <ul>
+            <li>— 1 мессенджер на выбор</li>
             <li>— Консультация по услугам и ценам</li>
             <li>— Ответы на частые вопросы</li>
-            <li>— Интеграция с CRM</li>
+            <li>— Интеграция с CRM (YCLIENTS, DIKIDI, amoCRM)</li>
           </ul>
-          <a href="https://t.me/davletmuratovai" target="_blank" rel="noopener" class="btn btn-dark btn-block">Написать</a>
-        </div>
-        <div class="price-card fade-in">
-          <h3>Max чат-бот</h3>
-          <div class="price">от 12 000 ₽</div>
-          <div class="crm-note">Работает с вашей CRM/системой записи — заявки и данные клиентов заносятся автоматически</div>
-          <ul>
-            <li>— Консультация по услугам и ценам</li>
-            <li>— Ответы на частые вопросы</li>
-            <li>— Интеграция с CRM</li>
-          </ul>
-          <a href="https://t.me/davletmuratovai" target="_blank" rel="noopener" class="btn btn-dark btn-block">Написать</a>
-        </div>
-        <div class="price-card fade-in">
-          <h3>VK чат-бот</h3>
-          <div class="price">от 10 000 ₽</div>
-          <div class="crm-note">Работает с вашей CRM/системой записи — заявки и данные клиентов заносятся автоматически</div>
-          <ul>
-            <li>— Консультация по услугам и ценам</li>
-            <li>— Ответы на частые вопросы</li>
-            <li>— Интеграция с CRM</li>
-          </ul>
+          <div class="price-note">Цена может отличаться на 1–4 тыс. в зависимости от мессенджера и CRM</div>
           <a href="https://t.me/davletmuratovai" target="_blank" rel="noopener" class="btn btn-dark btn-block">Написать</a>
         </div>
         <div class="price-card highlight fade-in">
-          <h3>WhatsApp + Max + Telegram</h3>
-          <div class="price">Обсудим индивидуально</div>
+          <span class="price-badge">Популярный выбор</span>
+          <h3>Стандарт</h3>
+          <div class="price">27 000 ₽</div>
+          <div class="crm-note">Два самых востребованных канала с полной интеграцией</div>
           <ul>
-            <li>— Все три мессенджера сразу</li>
-            <li>— Прямая интеграция с вашей системой записи</li>
-            <li>— Единая база знаний и история диалогов</li>
+            <li>— Telegram + Max</li>
+            <li>— Интеграция с CRM</li>
+            <li>— Единая база знаний</li>
+            <li>— Напоминания клиентам о визите</li>
           </ul>
           <a href="https://t.me/davletmuratovai" target="_blank" rel="noopener" class="btn btn-primary btn-block">Написать</a>
         </div>
         <div class="price-card fade-in">
-          <h3>Другие мессенджеры</h3>
-          <div class="price">Обсудим индивидуально</div>
+          <span class="price-badge">Рекомендуем</span>
+          <h3>Оптимум</h3>
+          <div class="price">36 000 ₽</div>
+          <div class="crm-note">Все ключевые мессенджеры для салонов красоты</div>
           <ul>
-            <li>— Viber, iMessage, чат на сайте и другое</li>
-            <li>— Под задачи и парк систем вашего салона</li>
+            <li>— Telegram + WhatsApp + Max</li>
+            <li>— Интеграция с CRM</li>
+            <li>— Единая база знаний и история диалогов</li>
+            <li>— Напоминания клиентам о визите</li>
           </ul>
           <a href="https://t.me/davletmuratovai" target="_blank" rel="noopener" class="btn btn-dark btn-block">Написать</a>
         </div>
+        <div class="price-card fade-in">
+          <h3>Максимальный</h3>
+          <div class="price">от 55 000 ₽</div>
+          <div class="crm-note">Комплексное решение для сетей и крупных клиник</div>
+          <ul>
+            <li>— Все мессенджеры (Telegram, WhatsApp, Max, VK)</li>
+            <li>— Расширенная интеграция с CRM</li>
+            <li>— Приоритетная поддержка</li>
+            <li>— Индивидуальная настройка сценариев</li>
+          </ul>
+          <a href="https://t.me/davletmuratovai" target="_blank" rel="noopener" class="btn btn-dark btn-block">Написать</a>
+        </div>
+      </div>
+
+      <div class="pricing-other fade-in">
+        <div>
+          <h3>Другие каналы и настройки</h3>
+          <p>Viber, iMessage, чат на сайте, СМС-рассылки, нестандартные интеграции — обсудим индивидуально под задачи вашего салона.</p>
+        </div>
+        <a href="https://t.me/davletmuratovai" target="_blank" rel="noopener" class="btn btn-dark">Написать</a>
+      </div>
+
+      <div class="pricing-support fade-in">
+        <h3>Сопровождение — 3 000 ₽/мес (по желанию)</h3>
+        <p>Бот и все доступы к нему принадлежат вам с момента запуска и продолжают работать без сопровождения. Если хотите передать текущие задачи мне — оформляем сопровождение отдельно.</p>
+        <div class="support-sub">Что входит</div>
+        <ul>
+          <li>— До 2 часов правок в месяц (услуги, цены, ответы)</li>
+          <li>— Еженедельный мониторинг диалогов бота</li>
+          <li>— Приоритетная поддержка: ответ в течение 24 часов в рабочие дни, критичные сбои — до 4 часов</li>
+          <li>— Адаптация бота к изменениям на стороне мессенджеров и сервисов</li>
+        </ul>
+        <div class="price-note">Первый месяц входит в стоимость подключения. Отключить сопровождение можно в любой момент — бот продолжит работать в прежнем режиме.</div>
       </div>
     </div>
   </section>
@@ -612,6 +650,18 @@
         <h2>Частые вопросы</h2>
       </div>
       <div class="faq-list fade-in">
+        <details class="faq-item">
+          <summary>Есть ли пробный период?</summary>
+          <div class="faq-a">У сервисов с самостоятельной настройкой пробный период есть, потому что вы получаете доступ и несколько дней заполняете услуги, цены и сценарии сами. Здесь пробовать нечего — я собираю бота под ваш салон на ваших данных. Вместо триала работает другое: 50% предоплата, я собираю и показываю готового бота на ваших услугах, оставшиеся 50% — только после того, как вы увидели его в работе.</div>
+        </details>
+        <details class="faq-item">
+          <summary>Чем это лучше обычной онлайн-записи?</summary>
+          <div class="faq-a">Онлайн-запись работает для клиентов, которые уже знают, чего хотят. Большая часть обращений — «хочу что-то с лицом, но не знаю что», «а мне подойдёт лазер?», «сколько сеансов понадобится». Онлайн-запись такому клиенту не поможет — он уйдёт без консультации. Бот проводит первичную консультацию и доводит клиента до записи.</div>
+        </details>
+        <details class="faq-item">
+          <summary>Почему разовый платёж, а не подписка?</summary>
+          <div class="faq-a">Готовые сервисы работают по подписке — 3–4 тыс. ₽/мес, за три года это 130–150 тыс. Здесь настроенный бот принадлежит вам с момента запуска: доступы, база знаний, код — всё передаётся вам, бот работает без моего участия. Разовая оплата за настройку, дальше только небольшие расходы на сторонние сервисы (нейросеть, хостинг) — обычно 1–2 тыс. ₽/мес суммарно. Сопровождение за 3 000 ₽/мес — опционально: если хотите, чтобы правки и мониторинг брал я, а не ваш сотрудник. Отключается в любой момент.</div>
+        </details>
         <details class="faq-item">
           <summary>Сколько времени занимает внедрение?</summary>
           <div class="faq-a">Обычно 3–5 рабочих дней: собираем базу услуг и цен, настраиваем бота под ваш мессенджер и стиль общения, подключаем CRM и тестируем на реальных диалогах.</div>
