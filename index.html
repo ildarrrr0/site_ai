@@ -221,6 +221,25 @@
   .feature-card h3 { font-size: 17px; margin: 0 0 8px; font-weight: 700; }
   .feature-card p { font-size: 14.5px; color: var(--muted); margin: 0; }
 
+  /* ---------- Cases teaser ---------- */
+  .case-tag {
+    display: inline-flex; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--gold-dark); background: rgba(169, 121, 63, 0.12); padding: 6px 12px; border-radius: 999px;
+  }
+  .case-teaser {
+    display: grid; grid-template-columns: 1fr 1fr; background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+  }
+  .case-teaser__info { padding: 44px; display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+  .case-teaser__info h3 { font-size: 22px; margin: 0; font-weight: 600; }
+  .case-teaser__info h3 a { color: inherit; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--border); }
+  .case-teaser__info h3 a:hover { text-decoration-color: currentColor; }
+  .case-teaser__info p { color: var(--muted); font-size: 15px; margin: 0; }
+  .case-teaser__quote { background: var(--green); color: #f4efe1; padding: 44px; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+  .case-teaser__quote p { font-family: 'Unbounded', sans-serif; font-style: italic; font-size: 21px; line-height: 1.4; margin: 0; font-weight: 500; }
+  .case-teaser__quote cite { font-style: normal; font-size: 14px; color: rgba(244, 239, 225, 0.7); }
+  .case-teaser__quote cite a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+
   /* ---------- Demo ---------- */
   .demo-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 26px; align-items: stretch; }
   .demo-chat {
@@ -329,7 +348,7 @@
   @media (max-width: 980px) {
     .hero-grid { grid-template-columns: 1fr; }
     .hero-visual { max-width: 480px; }
-    .compare-grid, .demo-grid { grid-template-columns: 1fr; }
+    .compare-grid, .demo-grid, .case-teaser { grid-template-columns: 1fr; }
     .steps-grid { grid-template-columns: repeat(2, 1fr); }
     .features-grid { grid-template-columns: repeat(2, 1fr); }
     .pricing-grid { grid-template-columns: repeat(2, 1fr); }
@@ -363,6 +382,7 @@
     <ul class="nav-links">
       <li><a href="#product">Продукт</a></li>
       <li><a href="#how">Как работает</a></li>
+      <li><a href="/cases/">Кейсы</a></li>
       <li><a href="#pricing">Цены</a></li>
       <li><a href="#contacts">Контакты</a></li>
     </ul>
@@ -507,6 +527,28 @@
           <h3>Круглосуточно</h3>
           <p>Отвечает ночью, в выходные и праздники — без выгорания и больничных.</p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CASES TEASER -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head fade-in">
+        <span class="eyebrow">Кейсы</span>
+        <h2>Как ИИ-ассистент работает у реальных клиентов</h2>
+      </div>
+      <div class="case-teaser fade-in">
+        <div class="case-teaser__info">
+          <span class="case-tag">Языковая школа</span>
+          <h3><a href="https://ensina-me.ru" target="_blank" rel="noopener">Ensina-me</a> — школа португальского и испанского</h3>
+          <p>ИИ-ассистент в Telegram консультирует по языкам и уровню, квалифицирует клиента и передаёт заявку прямо в CRM — без участия администратора.</p>
+          <a href="/cases/" class="btn btn-dark">Смотреть все кейсы</a>
+        </div>
+        <blockquote class="case-teaser__quote">
+          <p>«Теперь заявки не теряются — это действительно прорыв»</p>
+          <cite>— Дерио, руководитель <a href="https://ensina-me.ru" target="_blank" rel="noopener">Ensina-me</a></cite>
+        </blockquote>
       </div>
     </div>
   </section>

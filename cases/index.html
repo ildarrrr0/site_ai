@@ -1,0 +1,375 @@
+<title>Кейсы — idmAI</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Реальные кейсы внедрения ИИ-ассистента idmAI в образовательных центрах и языковых школах — как бот консультирует клиентов и передаёт заявки в CRM." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f6f1e6;
+    --bg-soft: #efe7d6;
+    --card: #fffdf8;
+    --ink: #21281f;
+    --muted: #6c6a5d;
+    --green: #1d3a30;
+    --green-deep: #142720;
+    --green-soft: rgba(29, 58, 48, 0.08);
+    --gold: #a9793f;
+    --gold-dark: #8d6330;
+    --border: rgba(29, 58, 48, 0.14);
+    --shadow: 0 20px 50px -25px rgba(20, 39, 32, 0.35);
+    --radius: 20px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  html, body { overflow-x: hidden; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    width: 100%;
+  }
+
+  h1, h2, h3, h4, .serif { font-family: 'Unbounded', 'Manrope', sans-serif; font-weight: 600; letter-spacing: -0.01em; overflow-wrap: break-word; }
+
+  img, svg { max-width: 100%; display: block; }
+
+  a { color: inherit; }
+
+  .container {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  section { position: relative; }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+  }
+  .eyebrow::before {
+    content: '';
+    width: 22px;
+    height: 1.5px;
+    background: var(--gold-dark);
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 26px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    white-space: nowrap;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary { background: var(--gold); color: #fff8ee; box-shadow: 0 14px 26px -12px rgba(169, 121, 63, 0.55); }
+  .btn-primary:hover { background: var(--gold-dark); }
+  .btn-outline { background: transparent; border-color: var(--green); color: var(--green); }
+  .btn-outline:hover { background: var(--green); color: #fff; }
+  .btn-dark { background: var(--green); color: #f4efe1; box-shadow: 0 14px 26px -12px rgba(20, 39, 32, 0.5); }
+  .btn-dark:hover { background: var(--green-deep); }
+  .btn-sm { padding: 11px 18px; font-size: 14px; }
+
+  /* ---------- Header ---------- */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(246, 241, 230, 0.86);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+  }
+  .brand-mark {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: linear-gradient(155deg, var(--green) 0%, var(--green-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gold);
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .nav-links {
+    display: flex;
+    gap: 30px;
+    list-style: none;
+    margin: 0; padding: 0;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .nav-links a { text-decoration: none; color: var(--ink); opacity: 0.75; transition: opacity 0.15s; }
+  .nav-links a:hover, .nav-links a.active { opacity: 1; }
+  .nav-actions { display: flex; align-items: center; gap: 12px; }
+  .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 6px; }
+  .nav-toggle span { display: block; width: 24px; height: 2px; background: var(--ink); margin: 5px 0; border-radius: 2px; }
+
+  /* ---------- Section shells ---------- */
+  .section { padding: 96px 0; }
+  .section-head { max-width: 640px; margin-bottom: 52px; }
+  .section-head h1 { font-size: clamp(32px, 4.4vw, 48px); font-weight: 600; margin: 16px 0 14px; letter-spacing: -0.01em; }
+  .section-head p { color: var(--muted); font-size: 17px; margin: 0; }
+
+  /* ---------- Case card ---------- */
+  .case-tag {
+    display: inline-flex; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--gold-dark); background: rgba(169, 121, 63, 0.12); padding: 6px 12px; border-radius: 999px; margin-bottom: 18px;
+  }
+  .case-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 44px; margin-bottom: 40px;
+  }
+  .case-card__title { font-size: clamp(24px, 3.2vw, 34px); margin: 0 0 36px; font-weight: 600; }
+  .case-card__title a { color: inherit; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--border); }
+  .case-card__title a:hover { text-decoration-color: currentColor; }
+  .case-card__body { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; }
+  .case-block h4 { font-size: 12.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--green); margin: 0 0 12px; }
+  .case-block.pain p { color: var(--muted); font-size: 15.5px; margin: 0; }
+  .case-block.solution ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+  .case-block.solution li { font-size: 15px; color: var(--ink); display: flex; gap: 10px; }
+  .case-block.solution li::before { content: '✓'; color: var(--green); font-weight: 800; flex-shrink: 0; }
+  .case-card__screenshot-wrap { grid-column: 1 / -1; display: flex; justify-content: center; padding: 8px 0; }
+  .case-quote {
+    grid-column: 1 / -1; background: var(--green); color: #f4efe1; border-radius: var(--radius);
+    padding: 38px 40px; margin: 0;
+  }
+  .case-quote p { font-family: 'Unbounded', sans-serif; font-style: italic; font-size: 18px; line-height: 1.55; margin: 0 0 16px; font-weight: 500; }
+  .case-quote cite { font-style: normal; font-size: 14px; color: rgba(244, 239, 225, 0.72); }
+
+  /* ---------- Case screenshot mock ---------- */
+  .case-screenshot {
+    width: 100%; max-width: 320px; background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; box-shadow: var(--shadow); overflow: hidden;
+  }
+  .case-screenshot__head { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--border); background: var(--bg-soft); }
+  .case-screenshot__avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+  .case-screenshot__head strong { display: block; font-size: 13.5px; }
+  .case-screenshot__head span { font-size: 11px; color: var(--muted); }
+  .case-screenshot__body { padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+  .case-screenshot .bubble { border-radius: 14px; padding: 9px 13px; font-size: 12.5px; max-width: 86%; }
+  .case-screenshot .bubble.user { background: var(--green); color: #f4efe1; margin-left: auto; border-bottom-right-radius: 4px; }
+  .case-screenshot .bubble.bot { background: var(--bg-soft); color: var(--ink); border-bottom-left-radius: 4px; }
+  .case-screenshot__caption { font-size: 11.5px; color: var(--muted); text-align: center; padding: 4px 16px 14px; }
+
+  .case-footer-cta { text-align: center; padding-top: 20px; }
+  .case-footer-cta p { color: var(--muted); font-size: 15.5px; margin: 0 0 20px; }
+
+  /* ---------- Footer ---------- */
+  footer { background: var(--green); color: #f4efe1; padding: 80px 0 40px; }
+  .footer-inner { text-align: center; max-width: 620px; margin: 0 auto; }
+  footer h2 { font-size: clamp(28px, 3.6vw, 38px); font-weight: 600; margin: 0 0 16px; }
+  footer p { color: rgba(244, 239, 225, 0.75); font-size: 16px; margin: 0 0 34px; }
+  .footer-actions { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 56px; }
+  .footer-actions .btn-primary { background: var(--gold); }
+  .footer-actions .btn-wa { background: rgba(244, 239, 225, 0.1); color: #f4efe1; border: 1.5px solid rgba(244, 239, 225, 0.35); }
+  .footer-actions .btn-wa:hover { background: rgba(244, 239, 225, 0.18); }
+  .footer-phones { text-align: center; font-size: 13px; color: rgba(244, 239, 225, 0.55); margin-bottom: 18px; }
+  .footer-phones a { color: rgba(244, 239, 225, 0.75); text-decoration: none; }
+  .footer-phones a:hover { text-decoration: underline; }
+  .footer-bottom { border-top: 1px solid rgba(244, 239, 225, 0.15); padding-top: 26px; text-align: center; font-size: 13px; color: rgba(244, 239, 225, 0.5); }
+  .footer-legal { margin-top: 14px; text-align: center; font-size: 12px; line-height: 1.6; color: rgba(244, 239, 225, 0.4); }
+  .footer-legal a { color: rgba(244, 239, 225, 0.55); text-decoration: none; }
+  .footer-legal a:hover { text-decoration: underline; }
+
+  /* ---------- Fade in ---------- */
+  .fade-in { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .fade-in.in-view { opacity: 1; transform: translateY(0); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 980px) {
+    .case-card__body { grid-template-columns: 1fr; }
+    .case-card { padding: 32px; }
+  }
+  @media (max-width: 720px) {
+    .nav-links, .nav-actions .btn-outline { display: none; }
+    .nav-toggle { display: block; }
+    .nav.open .nav-links {
+      display: flex; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg);
+      flex-direction: column; padding: 20px 24px; gap: 18px; border-bottom: 1px solid var(--border);
+    }
+    .section { padding: 64px 0; }
+  }
+  @media (max-width: 480px) {
+    .container { padding: 0 20px; }
+    .section-head h1 { font-size: clamp(26px, 8vw, 36px); }
+    footer h2 { font-size: clamp(22px, 7vw, 38px); }
+    .case-card { padding: 24px; }
+  }
+</style>
+
+<header>
+  <nav class="nav" id="nav">
+    <a href="/" class="brand">
+      <span class="brand-mark">i</span>
+      idmAI
+    </a>
+    <ul class="nav-links">
+      <li><a href="/#product">Продукт</a></li>
+      <li><a href="/#how">Как работает</a></li>
+      <li><a href="/cases/" class="active">Кейсы</a></li>
+      <li><a href="/#pricing">Цены</a></li>
+      <li><a href="/#contacts">Контакты</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="/#demo" class="btn btn-outline btn-sm">Посмотреть демо</a>
+      <a href="https://t.me/davletmuratovai" target="_blank" rel="noopener" class="btn btn-dark btn-sm">Написать</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Меню">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main>
+
+  <!-- PAGE HEAD -->
+  <section class="section" style="padding-bottom: 0;">
+    <div class="container">
+      <div class="section-head fade-in">
+        <span class="eyebrow">Кейсы</span>
+        <h1>Кейсы</h1>
+        <p>Как ИИ Ассистент работает у реальных клиентов</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CASES LIST -->
+  <section class="section" style="padding-top: 40px;">
+    <div class="container">
+
+      <!-- CASE: Ensina-me (published: true) -->
+      <article class="case-card fade-in">
+        <span class="case-tag">Языковая школа</span>
+        <h2 class="case-card__title"><a href="https://ensina-me.ru" target="_blank" rel="noopener">Ensina-me</a> — школа португальского и испанского</h2>
+
+        <div class="case-card__body">
+          <div class="case-block pain">
+            <h4>Было</h4>
+            <p>Администратор часто вне доступа, а руководитель не может прерывать уроки ради каждой новой заявки. В итоге школа теряла учеников.</p>
+          </div>
+          <div class="case-block solution">
+            <h4>Что сделали</h4>
+            <ul>
+              <li>ИИ-ассистент в Telegram</li>
+              <li>Консультирует по языкам (европейский/бразильский португальский, испанский), уровню и формату</li>
+              <li>Квалифицирует клиента, собирает заявку</li>
+              <li>Автоматическая передача заявки в AlfaCRM</li>
+            </ul>
+          </div>
+
+          <div class="case-card__screenshot-wrap">
+            <div class="case-screenshot">
+              <div class="case-screenshot__head">
+                <div class="case-screenshot__avatar"></div>
+                <div>
+                  <strong>Мария Ensina-me Админ</strong>
+                  <span>бот</span>
+                </div>
+              </div>
+              <div class="case-screenshot__body">
+                <div class="bubble user">/start</div>
+                <div class="bubble bot">Olá! 👋 Добро пожаловать в «Ensina-me»! Меня зовут Мария, я ваш виртуальный помощник. Я здесь, чтобы помочь вам разобраться с португальским и испанским. Просто спрашивайте, буду рада помочь! 😊</div>
+                <div class="bubble user">хочу начать заниматься португальским</div>
+                <div class="bubble bot">Отличный выбор! 🌟 Сразу уточните, пожалуйста, какой вариант португальского предпочитаете — европейский или бразильский?</div>
+                <div class="bubble user">европейский</div>
+                <div class="bubble bot">Замечательно! 🌐 Теперь давайте определимся с уровнем: вы начинаете с нуля, уже что-то знаете или чувствуете себя свободно?</div>
+              </div>
+              <div class="case-screenshot__caption">Реальная переписка с ботом в Telegram</div>
+            </div>
+          </div>
+
+          <blockquote class="case-quote">
+            <p>«Обычно я отвечаю на входящие звонки на автомате: вежливо говорю «спасибо, сейчас нет необходимости» и кладу трубку. Но в этот раз я почему-то решил дослушать предложение до конца. И меня зацепило одно слово — «ИИ для приёма заявок в Telegram»... На тестировании я так увлёкся, что специально придумывал новые вопросы, лишь бы бот не переводил меня в заявку, а продолжал диалог 😄 Огромное спасибо Ильдару за такого крутого ИИ-помощника! Теперь заявки не теряются — это действительно прорыв. Очень рекомендую!»</p>
+            <cite>— Дерио, руководитель <a href="https://ensina-me.ru" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">Ensina-me</a></cite>
+          </blockquote>
+        </div>
+      </article>
+
+      <div class="case-footer-cta fade-in">
+        <p>Хотите такой же результат для своего центра?</p>
+        <a href="https://t.me/davletmuratovai" target="_blank" rel="noopener" class="btn btn-primary">Написать</a>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer id="contacts">
+  <div class="container footer-inner fade-in">
+    <h2>Готовы перестать терять заявки на подбор преподавателя?</h2>
+    <p>Напишите — обсудим, какой мессенджер и интеграция подойдут вашему центру.</p>
+    <div class="footer-actions">
+      <a href="https://t.me/davletmuratovai" target="_blank" rel="noopener" class="btn btn-primary">Написать в Telegram</a>
+      <a href="https://wa.me/79337659731" target="_blank" rel="noopener" class="btn btn-wa">Написать в WhatsApp</a>
+    </div>
+    <div class="footer-phones">Позвонить: <a href="tel:+79957858451">+7&nbsp;995&nbsp;785-84-51</a></div>
+    <div class="footer-bottom">© idmAI — ИИ-ассистент для образовательных центров</div>
+    <div class="footer-legal">
+      Самозанятый Давлетмуратов Ильдар Муратович<br>
+      ИНН 773580583271<br>
+      Email: <a href="mailto:ildardav909@gmail.com">ildardav909@gmail.com</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ---------- Мобильное меню ----------
+  const nav = document.getElementById('nav');
+  const navToggle = document.getElementById('navToggle');
+  navToggle.addEventListener('click', () => nav.classList.toggle('open'));
+  document.querySelectorAll('.nav-links a').forEach((a) =>
+    a.addEventListener('click', () => nav.classList.remove('open'))
+  );
+
+  // ---------- Fade-in при скролле ----------
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.15 }
+  );
+  document.querySelectorAll('.fade-in').forEach((el) => observer.observe(el));
+</script>
