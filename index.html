@@ -1,778 +1,1225 @@
-<title>idmAI — ИИ-ассистент для образовательных центров</title>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="idmAI — ИИ-ассистент, который отвечает клиентам репетиторских центров и языковых школ в мессенджерах, подбирает преподавателя и записывает на пробное занятие." />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700;800&display=swap" rel="stylesheet" />
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>idmAI — ИИ-ассистент для языковых школ</title>
+<meta name="description" content="ИИ-ассистент для языковых школ: круглосуточно отвечает родителям в Telegram, WhatsApp и MAX, подбирает преподавателя и доводит до записи на пробное занятие. Заявка сразу попадает в CRM.">
+<meta name="theme-color" content="#13100d">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js');</script>
 <style>
-  :root {
-    --bg: #f6f1e6;
-    --bg-soft: #efe7d6;
-    --card: #fffdf8;
-    --ink: #21281f;
-    --muted: #6c6a5d;
-    --green: #1d3a30;
-    --green-deep: #142720;
-    --green-soft: rgba(29, 58, 48, 0.08);
-    --gold: #a9793f;
-    --gold-dark: #8d6330;
-    --border: rgba(29, 58, 48, 0.14);
-    --shadow: 0 20px 50px -25px rgba(20, 39, 32, 0.35);
-    --radius: 20px;
-  }
+:root {
+  --bg: #13100d;      /* базовые секции */
+  --panel: #1c1814;   /* поднятые секции, чат, поверхности */
+  --deep: #0d0b09;    /* «провалы» */
+  --raise: #1c1814;
+  --raise2: #241f19;
+  --text: #f2ece2;
+  --dim: #b5aa9a;
+  --muted: #8e8375;
+  --line: #272119;
+  --line2: #3b3227;
+  --accent: #ff5a1f;
+  --sand: #d8b47a;
+  --green: #7fa06a;
+  --sand-soft: rgba(216, 180, 122, .12);
+  --sand-line: rgba(216, 180, 122, .22);
+  --sand-strong: rgba(216, 180, 122, .45);
+  --pad: clamp(16px, 5vw, 64px);
+  --gap: clamp(16px, 2.4vw, 32px);
+  --sec: clamp(76px, 10vw, 140px);
+  --blk: clamp(48px, 6.6vw, 96px);
+}
 
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: var(--bg); scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: "Onest", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  font-size: 17px; line-height: 1.5; font-weight: 400;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility;
+}
+a { color: inherit; }
+button, input { font: inherit; color: inherit; }
+::selection { background: var(--accent); color: var(--bg); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.wrap { max-width: 1328px; margin: 0 auto; padding: 0 var(--pad); }
 
-  html, body { overflow-x: hidden; }
+/* ---------- Sections: three backgrounds, no rules between them ---------- */
+section { padding: var(--sec) 0; }
+.results, #return { background: var(--deep); }
+#calc, #live, #price { background: var(--panel); }
+.blk { margin-top: var(--blk); }
+.mt { margin-top: clamp(32px, 4vw, 52px); }
 
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
-    line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
-    width: 100%;
-  }
+/* ---------- Grid ---------- */
+.grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px var(--gap); }
 
-  h1, h2, h3, .serif { font-family: 'Unbounded', 'Manrope', sans-serif; font-weight: 600; letter-spacing: -0.01em; overflow-wrap: break-word; }
+/* Section label: big sand number + plaque */
+.lbl { font-size: 13px; line-height: 1.4; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; color: var(--sand); }
+.lbl .n {
+  display: block; margin-bottom: 14px; color: var(--sand);
+  font-size: clamp(30px, 3.2vw, 44px); font-weight: 500; line-height: 1; letter-spacing: -.035em;
+  text-transform: none; font-variant-numeric: tabular-nums;
+}
+.pl, .eyebrow {
+  display: inline-block; padding: 6px 11px 5px; border: 1px solid var(--sand-line); border-radius: 3px;
+  background: var(--panel); color: var(--sand);
+  font-size: 12px; font-weight: 500; line-height: 1.4; letter-spacing: .08em; text-transform: uppercase;
+}
+#calc .pl, #live .pl, #price .pl, #calc .eyebrow, #price .eyebrow { background: var(--bg); }
+.eyebrow { margin-bottom: clamp(18px, 2.2vw, 26px); }
 
-  img, svg { max-width: 100%; display: block; }
+/* ---------- Type ---------- */
+h1, h2 { font-weight: 700; letter-spacing: -.045em; line-height: .96; text-wrap: balance; }
+h1 { font-size: clamp(44px, 6.3vw, 92px); max-width: 9.5em; }
+h2 { font-size: clamp(36px, 5.4vw, 72px); max-width: 13em; }
+h3 { font-weight: 500; letter-spacing: -.02em; }
+p { text-wrap: pretty; }
+.lead { font-size: clamp(19px, 1.9vw, 23px); line-height: 1.45; color: var(--dim); max-width: 31em; }
+.prose { font-size: clamp(25px, 3.2vw, 40px); line-height: 1.2; letter-spacing: -.028em; font-weight: 500; max-width: 21em; color: var(--muted); }
+.prose em { font-style: normal; color: var(--text); }
+.cap { font-size: 14px; color: var(--muted); line-height: 1.5; }
+.txt { max-width: 34em; }
+.txt p { font-size: clamp(18px, 1.7vw, 21px); line-height: 1.5; color: var(--dim); }
+.txt p + p { margin-top: .9em; }
+.txt a { color: var(--text); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .2em; text-decoration-color: var(--line2); }
+.txt a:hover { text-decoration-color: var(--sand); }
 
-  a { color: inherit; }
+/* Key phrase: one per paragraph at most */
+mark, .txt b {
+  color: var(--text); background: var(--raise2); font-weight: 500;
+  padding: .04em .3em; border-radius: 3px; -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+#calc mark, #price mark, #live mark { background: var(--line2); }
 
-  .container {
-    max-width: 1180px;
-    margin: 0 auto;
-    padding: 0 24px;
-  }
+/* Problem: three points with figures */
+.trio { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 var(--gap); list-style: none; }
+.trio li { border-top: 1px solid var(--line); padding: 22px 0 26px; color: var(--dim); font-size: 17px; line-height: 1.5; }
+.fig { display: block; margin-bottom: 14px; color: var(--sand); font-size: clamp(48px, 5.4vw, 76px); font-weight: 700; line-height: .9; letter-spacing: -.05em; }
+.fig small { display: block; margin-top: 10px; font-size: 13px; font-weight: 500; letter-spacing: .07em; line-height: 1.4; text-transform: uppercase; }
+.punch { font-size: clamp(24px, 3vw, 38px); line-height: 1.2; letter-spacing: -.028em; font-weight: 500; max-width: 20em; padding-top: 26px; border-top: 1px solid var(--sand-line); }
 
-  section { position: relative; }
+/* Ruled rows */
+.rows { list-style: none; border-bottom: 1px solid var(--line); }
+.rows > li { border-top: 1px solid var(--line); padding: 20px 0; }
+.rows.big > li { font-size: clamp(20px, 2.2vw, 27px); line-height: 1.3; letter-spacing: -.02em; font-weight: 500; padding: 22px 0; }
+.rows h3 { font-size: clamp(20px, 2vw, 24px); margin-bottom: 8px; }
+.rows p { color: var(--dim); max-width: 34em; }
+.rows.num { counter-reset: r; }
+.rows.num > li { counter-increment: r; display: grid; grid-template-columns: clamp(48px, 5vw, 72px) minmax(0, 1fr); align-items: baseline; }
+.rows.num > li::before { content: counter(r, decimal-leading-zero); color: var(--sand); font-size: .9em; }
 
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 12.5px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--gold-dark);
-  }
-  .eyebrow::before {
-    content: '';
-    width: 22px;
-    height: 1.5px;
-    background: var(--gold-dark);
-  }
+/* ---------- Top bar ---------- */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: 22px; padding-bottom: 22px; }
+.logo { font-weight: 700; font-size: 19px; letter-spacing: -.04em; text-decoration: none; }
+.top nav { display: flex; gap: clamp(18px, 3vw, 36px); font-size: 15px; }
+.top nav a { text-decoration: none; color: var(--muted); transition: color .2s; }
+.top nav a:hover { color: var(--text); }
 
-  /* ---------- Buttons ---------- */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 14px 26px;
-    border-radius: 999px;
-    font-weight: 700;
-    font-size: 15px;
-    text-decoration: none;
-    border: 1.5px solid transparent;
-    cursor: pointer;
-    transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
-    white-space: nowrap;
-  }
-  .btn:hover { transform: translateY(-2px); }
-  .btn-primary { background: var(--gold); color: #fff8ee; box-shadow: 0 14px 26px -12px rgba(169, 121, 63, 0.55); }
-  .btn-primary:hover { background: var(--gold-dark); }
-  .btn-outline { background: transparent; border-color: var(--green); color: var(--green); }
-  .btn-outline:hover { background: var(--green); color: #fff; }
-  .btn-dark { background: var(--green); color: #f4efe1; box-shadow: 0 14px 26px -12px rgba(20, 39, 32, 0.5); }
-  .btn-dark:hover { background: var(--green-deep); }
-  .btn-ghost-link { font-size: 13.5px; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; font-weight: 600; }
-  .btn-block { width: 100%; }
-  .btn-sm { padding: 11px 18px; font-size: 14px; }
+/* ---------- Hero ---------- */
+.hero { padding-top: clamp(24px, 4vw, 64px); padding-bottom: clamp(48px, 6vw, 88px); }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 48px var(--gap); align-items: center; }
+.hero .lead { margin-top: clamp(22px, 2.6vw, 32px); max-width: 27em; }
+.hero .btns { margin-top: clamp(30px, 3.6vw, 44px); }
+.hero-meta { margin-top: 20px; font-size: 14px; color: var(--muted); }
+.hero-meta span { color: var(--line2); margin: 0 .5em; }
 
-  /* ---------- Header ---------- */
-  header {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    background: rgba(246, 241, 230, 0.86);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border);
-  }
-  .nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 24px;
-  }
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 800;
-    font-size: 20px;
-    letter-spacing: -0.01em;
-  }
-  .brand-mark {
-    width: 34px; height: 34px; border-radius: 10px;
-    background: linear-gradient(155deg, var(--green) 0%, var(--green-deep) 100%);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--gold);
-    font-family: 'Unbounded', sans-serif;
-    font-weight: 700;
-    font-size: 16px;
-    flex-shrink: 0;
-  }
-  .nav-links {
-    display: flex;
-    gap: 30px;
-    list-style: none;
-    margin: 0; padding: 0;
-    font-size: 15px;
-    font-weight: 600;
-  }
-  .nav-links a { text-decoration: none; color: var(--ink); opacity: 0.75; transition: opacity 0.15s; }
-  .nav-links a:hover { opacity: 1; }
-  .nav-actions { display: flex; align-items: center; gap: 12px; }
-  .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 6px; }
-  .nav-toggle span { display: block; width: 24px; height: 2px; background: var(--ink); margin: 5px 0; border-radius: 2px; }
+/* ---------- Buttons ---------- */
+.btns { display: flex; flex-wrap: wrap; gap: 12px; margin-top: clamp(40px, 5vw, 64px); }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 58px; padding: 0 30px; border: 1px solid var(--line2); border-radius: 2px;
+  font-size: 16px; font-weight: 500; text-decoration: none; color: var(--text);
+  transition: background-color .2s, border-color .2s, color .2s;
+}
+.btn-a { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.btn-a:hover { background: var(--text); border-color: var(--text); }
+.btn-o:hover { border-color: var(--text); }
 
-  /* ---------- Hero ---------- */
-  .hero {
-    padding: 90px 0 100px;
-    overflow: hidden;
-  }
-  .hero-grid {
-    display: grid;
-    grid-template-columns: 1.15fr 0.85fr;
-    gap: 60px;
-    align-items: center;
-  }
-  .hero h1 {
-    font-size: clamp(38px, 5vw, 58px);
-    line-height: 1.08;
-    margin: 22px 0 22px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-  }
-  .hero h1 em { font-style: normal; color: var(--gold-dark); font-weight: 600; }
-  .hero p.lead {
-    font-size: 18px;
-    color: var(--muted);
-    max-width: 540px;
-    margin: 0 0 34px;
-  }
-  .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+/* ---------- Results: horizontal bar chart ---------- */
+.results { padding: clamp(56px, 7vw, 100px) 0; }
+.chart { margin-top: clamp(28px, 3.4vw, 44px); border-bottom: 1px solid var(--line); }
+.crow {
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px var(--gap); align-items: center;
+  border-top: 1px solid var(--line); padding: clamp(20px, 2.4vw, 30px) 0;
+}
+.c-lbl { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; font-size: 13px; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; color: var(--sand); }
+.c-lbl .d { color: var(--green); font-size: 15px; letter-spacing: 0; text-transform: none; }
+.c-bars { display: grid; gap: 8px; }
+.c-bars i { display: block; width: var(--w); height: 3px; background: var(--muted); transform-origin: left center; transition: transform .8s cubic-bezier(.2, .7, .2, 1); }
+.c-bars i + i { height: 18px; background: var(--accent); transition-delay: .15s; }
+.js .rv:not(.in) .c-bars i { transform: scaleX(0); }
+.c-num {
+  display: flex; align-items: baseline; white-space: nowrap;
+  font-size: min(24vw, 104px); font-weight: 700; line-height: .82; letter-spacing: -.065em; color: var(--accent);
+  font-variant-numeric: lining-nums;
+}
+.c-num .from { font-size: .34em; font-weight: 400; color: var(--muted); letter-spacing: -.03em; display: inline-flex; align-items: center; }
+.arr { display: inline-block; position: relative; flex: none; width: 1.15em; height: 1px; margin: 0 .42em 0 .32em; background: var(--muted); transform: translateY(-.06em); }
+.arr::after { content: ""; position: absolute; right: 1px; top: -3px; width: 7px; height: 7px; border-top: 1px solid var(--muted); border-right: 1px solid var(--muted); transform: rotate(45deg); }
+.pct { font-size: .48em; letter-spacing: -.02em; margin-left: .05em; }
+.from .pct { font-size: 1em; margin-left: 0; }
+.chart-cap { margin-top: 20px; color: var(--sand); }
 
-  .hero-visual {
-    background: var(--card);
-    border-radius: 28px;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-    padding: 22px;
-  }
-  .hero-visual__head { display: flex; align-items: center; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
-  .hero-visual__avatar { width: 40px; height: 40px; border-radius: 12px; background: var(--green); }
-  .hero-visual__head strong { display: block; font-size: 15px; }
-  .hero-visual__head span { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }
-  .dot-live { width: 7px; height: 7px; border-radius: 50%; background: #4a9a6e; display: inline-block; }
-  .bubble { border-radius: 16px; padding: 12px 16px; font-size: 14.5px; margin-bottom: 10px; max-width: 88%; }
-  .bubble.user { background: var(--green); color: #f4efe1; margin-left: auto; border-bottom-right-radius: 4px; }
-  .bubble.bot { background: var(--bg-soft); color: var(--ink); border-bottom-left-radius: 4px; }
+/* ---------- Text links ---------- */
+.tlinks { display: flex; flex-wrap: wrap; gap: 16px clamp(32px, 5vw, 64px); }
+.tlinks.col { flex-direction: column; align-items: flex-start; gap: clamp(16px, 2vw, 24px); }
+.tlink {
+  display: inline-flex; align-items: baseline; gap: .32em;
+  font-size: clamp(28px, 3.6vw, 48px); font-weight: 500; letter-spacing: -.035em; line-height: 1.15;
+  text-decoration: none; padding-bottom: .1em; border-bottom: 1px solid var(--line2); transition: border-color .2s;
+}
+.tlink:hover { border-color: var(--sand); }
+.tlink span { color: var(--sand); display: inline-block; transition: transform .25s ease; }
+.tlink:hover span { transform: translateX(.28em); }
 
-  /* ---------- Section shells ---------- */
-  .section { padding: 96px 0; }
-  .section-alt { background: var(--bg-soft); }
-  .section-head { max-width: 640px; margin-bottom: 52px; }
-  .section-head h2 { font-size: clamp(28px, 3.4vw, 40px); font-weight: 600; margin: 16px 0 14px; letter-spacing: -0.01em; }
-  .section-head p { color: var(--muted); font-size: 17px; margin: 0; }
-  .section-head.center { margin-left: auto; margin-right: auto; text-align: center; }
+/* ---------- Device frames ---------- */
+.browser { border: 1px solid var(--line2); border-radius: 4px; overflow: hidden; background: var(--panel); }
+.browser-bar { display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border-bottom: 1px solid var(--line2); }
+.browser-bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--line2); flex: none; }
+.browser-bar span { margin-left: 12px; padding: 3px 12px; border-radius: 3px; background: var(--bg); font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.handset { border: 1px solid var(--line2); border-radius: 32px; padding: 12px 10px 14px; background: var(--panel); }
+.handset::before { content: ""; display: block; width: 32%; height: 5px; margin: 0 auto 10px; border-radius: 3px; background: var(--line2); }
+.screen { position: relative; overflow: hidden; aspect-ratio: 16 / 10; background: var(--bg); }
+.handset .screen { aspect-ratio: 23 / 50; border-radius: 22px; }
+.screen img { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+figcaption { margin-top: 14px; font-size: 14px; line-height: 1.5; color: var(--muted); }
+figcaption b { font-weight: 500; color: var(--text); }
 
-  /* ---------- Problem / Solution ---------- */
-  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-  .compare-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 34px; }
-  .compare-card.bad { background: #f2ece0; }
-  .compare-card.good { background: var(--green); color: #f4efe1; box-shadow: var(--shadow); }
-  .compare-card h3 { font-size: 21px; margin: 0 0 18px; font-weight: 600; }
-  .compare-card ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; }
-  .compare-card li { display: flex; gap: 12px; font-size: 15.5px; }
-  .compare-card.good li { color: rgba(244, 239, 225, 0.92); }
-  .compare-card:not(.good) li { color: var(--muted); }
-  .mark { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; margin-top: 1px; }
-  .mark.x { background: rgba(140, 70, 40, 0.14); color: #8c4628; }
-  .mark.v { background: rgba(244, 239, 225, 0.16); color: #f4efe1; }
+/* Schematic placeholders: the layout of the real screen, drawn in --line2 */
+.sk { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 4%; padding: 5%; }
+.sk i, .sk b { display: block; background: var(--line2); border-radius: 3px; }
+.sk-nav { display: flex; align-items: center; gap: 3%; }
+.sk-nav i { height: 10px; width: 6%; opacity: .7; }
+.sk-nav i:first-child { width: 14%; height: 14px; opacity: 1; margin-right: auto; }
+.sk-hero { flex: 1; display: grid; grid-template-columns: 1.1fr 1fr; gap: 5%; align-items: center; }
+.sk-hero > div:first-child { display: grid; gap: 9%; align-content: center; }
+.sk-hero .t { height: 9%; min-height: 12px; }
+.sk-hero .p { height: 5px; opacity: .6; }
+.sk-hero .btn-s { width: 34%; height: 9%; min-height: 12px; background: var(--sand-line); }
+.sk-hero .img { height: 86%; border-radius: 4px; background: var(--raise2); border: 1px solid var(--line2); }
+.sk-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3%; height: 22%; }
+.sk-cards i { height: 100%; background: var(--raise2); border: 1px solid var(--line2); }
+.sk-chat { gap: 3.2%; padding: 6% 6% 5%; }
+.sk-top { display: flex; align-items: center; gap: 6%; padding-bottom: 5%; border-bottom: 1px solid var(--line2); }
+.sk-top i:first-child { width: 14%; aspect-ratio: 1; border-radius: 50%; }
+.sk-top i:last-child { width: 46%; height: 8px; }
+.sk-chat .bl, .sk-chat .br { height: 6.2%; border-radius: 10px; }
+.sk-chat .bl { width: 72%; background: var(--raise2); border: 1px solid var(--line2); border-bottom-left-radius: 3px; }
+.sk-chat .br { width: 54%; align-self: flex-end; background: transparent; border: 1px solid var(--sand-line); border-bottom-right-radius: 3px; }
+.sk-chat .tall { height: 11%; }
+.sk-chat .chips { display: flex; flex-direction: column; gap: 6px; width: 64%; }
+.sk-chat .chips b { height: 16px; background: transparent; border: 1px solid var(--sand-line); }
+.sk-chat .inp { margin-top: auto; height: 7%; border-radius: 12px; background: transparent; border: 1px solid var(--line2); }
+.sk-app { gap: 3.4%; padding: 7% 7% 5%; }
+.sk-app .t { width: 58%; height: 12px; }
+.sk-app .s { width: 36%; height: 6px; opacity: .6; }
+.sk-app .prog { height: 8px; border-radius: 4px; background: var(--raise2); overflow: hidden; }
+.sk-app .prog i { width: 62%; height: 100%; background: var(--sand-line); border-radius: 4px; }
+.sk-app .card { height: 10%; background: var(--raise2); border: 1px solid var(--line2); border-radius: 8px; }
+.sk-app .tabs { margin-top: auto; display: flex; justify-content: space-around; padding-top: 5%; border-top: 1px solid var(--line2); }
+.sk-app .tabs i { width: 10%; aspect-ratio: 1; border-radius: 50%; }
 
-  /* ---------- Steps ---------- */
-  .steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
-  .step-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px 26px; }
-  .step-num { width: 42px; height: 42px; border-radius: 12px; background: var(--green-soft); color: var(--green); display: flex; align-items: center; justify-content: center; font-family: 'Unbounded', sans-serif; font-weight: 600; font-size: 15px; margin-bottom: 20px; }
-  .step-card h3 { font-size: 17px; margin: 0 0 8px; font-weight: 700; }
-  .step-card p { font-size: 14.5px; color: var(--muted); margin: 0; }
+/* Case screenshots: browser across the content column, two phones below */
+.shots { display: grid; gap: clamp(28px, 3.4vw, 44px); }
+.phones { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap); max-width: 640px; }
 
-  /* ---------- Features ---------- */
-  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-  .feature-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px; }
-  .feature-icon { width: 46px; height: 46px; border-radius: 13px; background: var(--green); color: var(--gold); display: flex; align-items: center; justify-content: center; margin-bottom: 18px; font-size: 20px; }
-  .feature-card h3 { font-size: 17px; margin: 0 0 8px; font-weight: 700; }
-  .feature-card p { font-size: 14.5px; color: var(--muted); margin: 0; }
+/* ---------- Chat inside a phone frame (hero) ---------- */
+.hero-chat .handset { max-width: 400px; margin: 0 auto; padding: 12px 10px 12px; }
+.chat {
+  background: var(--bg); border-radius: 22px; overflow: hidden;
+  display: flex; flex-direction: column; height: clamp(520px, 70vh, 640px); min-width: 0;
+}
+.chat-head { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--panel); border-bottom: 1px solid var(--line2); }
+.ava { width: 40px; height: 40px; flex: none; border-radius: 50%; background: var(--sand); color: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; letter-spacing: -.02em; }
+.who { line-height: 1.3; min-width: 0; }
+.who b { display: block; font-size: 15px; font-weight: 500; }
+.who span { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; color: var(--muted); }
+.pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2.4s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+.chat-tag { margin-left: auto; font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--sand); border: 1px solid var(--sand-line); border-radius: 3px; padding: 3px 7px; }
+.chat-msgs {
+  flex: 1; overflow-y: auto; overscroll-behavior: contain;
+  padding: 18px 14px; display: flex; flex-direction: column; gap: 10px;
+  scrollbar-width: thin; scrollbar-color: var(--line2) transparent;
+}
+.msg { max-width: 86%; padding: 10px 14px; border-radius: 16px; font-size: 15px; line-height: 1.45; white-space: pre-line; overflow-wrap: anywhere; }
+.msg.bot { align-self: flex-start; background: var(--raise2); border-bottom-left-radius: 4px; }
+.msg.user { align-self: flex-end; background: transparent; border: 1px solid var(--sand-strong); border-bottom-right-radius: 4px; }
+.msg.error { color: var(--dim); border-left: 2px solid var(--sand); }
+.msg.typing { display: flex; gap: 5px; padding: 15px 16px; }
+.msg.typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: blink 1.2s infinite ease-in-out; }
+.msg.typing span:nth-child(2) { animation-delay: .2s; }
+.msg.typing span:nth-child(3) { animation-delay: .4s; }
+@keyframes blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+.quick { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin-top: 2px; }
+.quick button {
+  background: transparent; border: 1px solid var(--sand-strong); border-radius: 12px; color: var(--sand);
+  padding: 8px 14px; font-size: 14.5px; line-height: 1.35; text-align: left; cursor: pointer;
+  transition: background-color .2s, border-color .2s;
+}
+.quick button:hover { background: var(--sand-soft); border-color: var(--sand); }
+.chat-form { display: flex; gap: 8px; padding: 10px; background: var(--panel); border-top: 1px solid var(--line2); }
+.chat-form input { flex: 1; min-width: 0; background: var(--bg); border: 1px solid var(--line2); border-radius: 18px; outline: 0; padding: 11px 15px; font-size: 16px; transition: border-color .2s; }
+.chat-form input:focus { border-color: var(--muted); }
+.chat-form input::placeholder { color: var(--muted); }
+.chat-form button { flex: none; background: var(--accent); color: var(--bg); border: 0; border-radius: 18px; padding: 0 16px; font-size: 15px; font-weight: 500; cursor: pointer; transition: background-color .2s; }
+.chat-form button:hover { background: var(--text); }
+.chat-form button:disabled { background: var(--line2); color: var(--muted); cursor: default; }
+.chat-form input:disabled { color: var(--muted); }
+.chat-note { margin-top: 14px; text-align: center; }
 
-  /* ---------- Cases teaser ---------- */
-  .case-tag {
-    display: inline-flex; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
-    color: var(--gold-dark); background: rgba(169, 121, 63, 0.12); padding: 6px 12px; border-radius: 999px;
-  }
-  .case-teaser {
-    display: grid; grid-template-columns: 1fr 1fr; background: var(--card); border: 1px solid var(--border);
-    border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
-  }
-  .case-teaser__info { padding: 44px; display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
-  .case-teaser__info h3 { font-size: 22px; margin: 0; font-weight: 600; }
-  .case-teaser__info h3 a { color: inherit; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--border); }
-  .case-teaser__info h3 a:hover { text-decoration-color: currentColor; }
-  .case-teaser__info p { color: var(--muted); font-size: 15px; margin: 0; }
-  .case-teaser__quote { background: var(--green); color: #f4efe1; padding: 44px; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
-  .case-teaser__quote p { font-style: italic; font-size: 19px; line-height: 1.45; margin: 0; font-weight: 500; }
-  .case-teaser__quote cite { font-style: normal; font-size: 14px; color: rgba(244, 239, 225, 0.7); }
-  .case-teaser__quote cite a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+/* ---------- Talk: copy left, phone right, phone runs past the section edge ---------- */
+.talk-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 48px var(--gap); }
+.talk-copy .lbl { margin-bottom: clamp(24px, 3vw, 36px); }
+.talk-copy .prose { font-size: clamp(24px, 2.7vw, 34px); max-width: 19em; }
+.talk-phone { position: relative; z-index: 1; width: min(100%, 320px); margin: 0 auto; }
 
-  /* ---------- Demo ---------- */
-  .demo-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 26px; align-items: stretch; }
-  .demo-chat {
-    background: var(--card); border: 1px solid var(--border); border-radius: 26px;
-    box-shadow: var(--shadow); display: flex; flex-direction: column; overflow: hidden; min-height: 520px;
-  }
-  .demo-chat__head { display: flex; align-items: center; gap: 12px; padding: 20px 24px; border-bottom: 1px solid var(--border); }
-  .demo-chat__avatar { width: 42px; height: 42px; border-radius: 12px; background: var(--green); flex-shrink: 0; }
-  .demo-chat__head strong { display: block; font-size: 16px; }
-  .demo-chat__head .status { font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
-  .demo-chat__badge { margin-left: auto; font-size: 11.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--gold-dark); background: rgba(169,121,63,0.12); padding: 6px 10px; border-radius: 999px; }
-  .demo-chat__messages { flex: 1; padding: 22px 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; max-height: 420px; }
-  .demo-chat__messages .bubble { max-width: 82%; font-size: 15px; }
-  .bubble.typing { display: flex; gap: 4px; padding: 15px 18px; }
-  .bubble.typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); opacity: 0.5; animation: blink 1.2s infinite ease-in-out; }
-  .bubble.typing span:nth-child(2) { animation-delay: 0.2s; }
-  .bubble.typing span:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes blink { 0%, 80%, 100% { opacity: 0.25; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
-  .bubble.error-bubble { background: #f4e2da; color: #7a3a22; }
-  .demo-chat__form { display: flex; gap: 10px; padding: 16px 20px; border-top: 1px solid var(--border); }
-  .demo-chat__form input {
-    flex: 1; min-width: 0; border: 1px solid var(--border); background: var(--bg-soft); border-radius: 999px;
-    padding: 13px 18px; font-size: 15px; font-family: inherit; color: var(--ink); outline: none;
-  }
-  .demo-chat__form input:focus { border-color: var(--gold); }
-  .demo-chat__form button {
-    width: 46px; height: 46px; border-radius: 50%; border: none; background: var(--green); color: var(--gold);
-    display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: background 0.15s;
-  }
-  .demo-chat__form button:hover { background: var(--green-deep); }
-  .demo-chat__form button:disabled { opacity: 0.5; cursor: not-allowed; }
+/* ---------- Reviews ---------- */
+.review p { max-width: 37em; font-size: clamp(18px, 1.6vw, 20px); line-height: 1.55; }
+.review p + p { margin-top: 1em; }
+.review .bigq {
+  max-width: 15em; margin-bottom: clamp(26px, 3vw, 40px);
+  font-size: clamp(34px, 4.8vw, 66px); line-height: 1.02; letter-spacing: -.045em; font-weight: 700;
+  color: var(--sand); text-wrap: balance;
+}
+.review .bigq::before { content: "\00AB"; display: block; font-size: 2em; line-height: .7; margin-bottom: .05em; }
+.review .bigq + p { font-size: clamp(21px, 2.1vw, 26px); line-height: 1.4; letter-spacing: -.015em; font-weight: 500; }
+.review + .review { margin-top: clamp(48px, 6vw, 80px); padding-top: clamp(48px, 6vw, 80px); border-top: 1px solid var(--line); }
+.review footer { margin-top: 28px; font-size: 15px; color: var(--muted); }
+.review footer b { font-weight: 500; color: var(--text); }
 
-  .demo-tg-card {
-    background: var(--green); color: #f4efe1; border-radius: 26px; padding: 40px 32px;
-    display: flex; flex-direction: column; justify-content: center; align-items: flex-start; box-shadow: var(--shadow);
-  }
-  .demo-tg-card .tg-icon { width: 56px; height: 56px; border-radius: 16px; background: rgba(244, 239, 225, 0.12); display: flex; align-items: center; justify-content: center; margin-bottom: 22px; font-size: 26px; }
-  .demo-tg-card h3 { font-size: 24px; margin: 0 0 12px; font-weight: 600; }
-  .demo-tg-card p { color: rgba(244, 239, 225, 0.78); font-size: 15px; margin: 0 0 26px; }
+/* ---------- Features ---------- */
+.feats { list-style: none; counter-reset: f; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: minmax(0, 1fr); column-gap: var(--gap); }
+.feats li {
+  counter-increment: f; display: grid; grid-template-columns: 2.6em minmax(0, 1fr); align-items: baseline;
+  border-top: 1px solid var(--line); padding: 20px 0;
+  font-size: clamp(19px, 1.8vw, 22px); line-height: 1.4; letter-spacing: -.012em;
+}
+.feats li::before { content: counter(f, decimal-leading-zero); color: var(--sand); font-size: .8em; font-weight: 500; }
 
-  /* ---------- Pricing ---------- */
-  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-  .price-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px; display: flex; flex-direction: column; }
-  .price-card.highlight { background: var(--green); color: #f4efe1; border: none; }
-  .price-card h3 { font-size: 19px; margin: 0 0 6px; font-weight: 700; }
-  .price-card .price { font-family: 'Unbounded', sans-serif; font-weight: 600; font-size: 26px; margin: 8px 0 16px; }
-  .price-card.highlight .price { font-size: 19px; font-style: normal; font-weight: 600; }
-  .price-card ul { list-style: none; padding: 0; margin: 0 0 24px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
-  .price-card li { font-size: 14px; display: flex; gap: 9px; }
-  .price-card:not(.highlight) li { color: var(--muted); }
-  .price-card.highlight li { color: rgba(244, 239, 225, 0.85); }
-  .price-card .crm-note { font-size: 13px; font-weight: 600; color: var(--green); background: var(--green-soft); border-radius: 10px; padding: 8px 12px; margin-bottom: 18px; }
-  .price-card.highlight .crm-note { background: rgba(244,239,225,0.12); color: #f4efe1; }
-  .price-card .price-badge { display: inline-flex; align-self: flex-start; font-size: 11.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 5px 12px; border-radius: 999px; margin-bottom: 14px; }
-  .price-card:not(.highlight) .price-badge { color: var(--gold-dark); background: rgba(169, 121, 63, 0.12); }
-  .price-card.highlight .price-badge { color: var(--green-deep); background: var(--gold); }
-  .price-note { font-size: 12px; color: var(--muted); line-height: 1.5; }
-  .price-card .price-note { margin: 4px 0 18px; }
+/* ---------- Steps: huge sand numbers hanging over the column edge ---------- */
+.steps { list-style: none; display: grid; grid-template-columns: minmax(0, 1fr); }
+.step {
+  --nf: clamp(64px, 9vw, 150px);
+  position: relative; border-top: 1px solid var(--line);
+  padding: 30px 0 34px calc(var(--nf) * 1.38); min-height: calc(var(--nf) * .78 + 64px);
+}
+.step:last-child { border-bottom: 1px solid var(--line); }
+.step .num {
+  position: absolute; left: 0; top: 28px;
+  font-size: var(--nf); font-weight: 700; line-height: .78; letter-spacing: -.07em;
+  color: var(--sand); font-variant-numeric: tabular-nums;
+}
+.step h3 { font-size: clamp(22px, 2.5vw, 32px); line-height: 1.1; margin-bottom: 8px; }
+.step p { color: var(--dim); max-width: 30em; }
 
-  .pricing-other { margin-top: 40px; padding-top: 36px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
-  .pricing-other h3 { font-size: 19px; margin: 0 0 6px; font-weight: 700; }
-  .pricing-other p { color: var(--muted); font-size: 15px; margin: 0; max-width: 520px; }
+/* ---------- Ownership chips ---------- */
+.assets { list-style: none; display: flex; flex-wrap: wrap; gap: 10px; }
+.assets li { padding: 12px 16px; border: 1px solid var(--sand-line); border-radius: 4px; background: var(--panel); font-size: 17px; font-weight: 500; }
+.assets-cap { margin-bottom: 14px; }
 
-  .pricing-support { margin-top: 22px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius); padding: 34px; }
-  .pricing-support h3 { font-size: 19px; margin: 0 0 10px; font-weight: 700; }
-  .pricing-support > p { color: var(--muted); font-size: 15px; margin: 0 0 22px; max-width: 640px; }
-  .pricing-support .support-sub { font-size: 13px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 12px; }
-  .pricing-support ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
-  .pricing-support li { font-size: 14.5px; color: var(--muted); display: flex; gap: 9px; }
-  .pricing-support .price-note { margin: 18px 0 0; }
+/* ---------- Pricing ---------- */
+.price { padding: clamp(22px, 4vw, 48px); border: 1px solid transparent; }
+.price.p1 { border-color: var(--accent); background: var(--raise2); }
+.price + .price { margin-top: clamp(16px, 2.4vw, 32px); }
+.price h3 { font-size: clamp(20px, 2vw, 24px); }
+.sum { font-weight: 700; letter-spacing: -.06em; line-height: .86; white-space: nowrap; margin: 18px 0 24px; font-variant-numeric: lining-nums; }
+.p1 .sum { font-size: clamp(56px, 11vw, 140px); }
+.p2 .sum { font-size: clamp(46px, 6.2vw, 80px); }
+.sum .cur { font-size: .4em; font-weight: 400; color: var(--muted); letter-spacing: 0; margin-left: .18em; }
+.price p { max-width: 32em; }
+.price .when { font-size: clamp(18px, 1.7vw, 21px); color: var(--dim); }
+.k { margin-top: 28px; font-size: 13px; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; color: var(--sand); }
+.incl { list-style: none; margin-top: 12px; max-width: 52em; column-gap: var(--gap); }
+.incl li { break-inside: avoid; border-top: 1px solid var(--line2); padding: 10px 0 11px; font-size: 17px; line-height: 1.4; }
+.terms { border-top: 1px solid var(--sand-line); padding-top: 24px; max-width: 46em; margin: clamp(24px, 3vw, 40px) clamp(22px, 4vw, 48px) 0; }
+.terms p + p { margin-top: 6px; }
 
-  /* ---------- FAQ ---------- */
-  .faq-list { max-width: 780px; }
-  .faq-item { border-bottom: 1px solid var(--border); }
-  .faq-item summary {
-    list-style: none; cursor: pointer; padding: 22px 0; font-weight: 700; font-size: 17px;
-    display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  }
-  .faq-item summary::-webkit-details-marker { display: none; }
-  .faq-item summary::after { content: '+'; font-size: 22px; color: var(--gold-dark); font-weight: 400; transition: transform 0.2s; flex-shrink: 0; }
-  .faq-item[open] summary::after { transform: rotate(45deg); }
-  .faq-item .faq-a { color: var(--muted); padding: 0 0 24px; font-size: 15.5px; max-width: 640px; }
+/* ---------- About ---------- */
+.about { display: flex; flex-direction: column; gap: 28px; }
+.photo {
+  width: 160px; aspect-ratio: 1; flex: none; border: 1px solid var(--line2); border-radius: 4px; overflow: hidden;
+  display: flex; align-items: center; justify-content: center; background: var(--panel);
+  font-size: 34px; font-weight: 500; letter-spacing: -.03em; color: var(--sand);
+}
+.photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.about-txt > p:first-child { font-size: clamp(22px, 2.4vw, 30px); line-height: 1.3; letter-spacing: -.02em; font-weight: 500; max-width: 22em; }
+.about .txt { margin-top: 24px; }
 
-  /* ---------- Footer ---------- */
-  footer { background: var(--green); color: #f4efe1; padding: 80px 0 40px; }
-  .footer-inner { text-align: center; max-width: 620px; margin: 0 auto; }
-  footer h2 { font-size: clamp(28px, 3.6vw, 38px); font-weight: 600; margin: 0 0 16px; }
-  footer p { color: rgba(244, 239, 225, 0.75); font-size: 16px; margin: 0 0 34px; }
-  .footer-actions { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 56px; }
-  .footer-actions .btn-primary { background: var(--gold); }
-  .footer-actions .btn-wa { background: rgba(244, 239, 225, 0.1); color: #f4efe1; border: 1.5px solid rgba(244, 239, 225, 0.35); }
-  .footer-actions .btn-wa:hover { background: rgba(244, 239, 225, 0.18); }
-  .footer-phones { text-align: center; font-size: 13px; color: rgba(244, 239, 225, 0.55); margin-bottom: 18px; }
-  .footer-phones a { color: rgba(244, 239, 225, 0.75); text-decoration: none; }
-  .footer-phones a:hover { text-decoration: underline; }
-  .footer-bottom { border-top: 1px solid rgba(244, 239, 225, 0.15); padding-top: 26px; text-align: center; font-size: 13px; color: rgba(244, 239, 225, 0.5); }
-  .footer-legal { margin-top: 14px; text-align: center; font-size: 12px; line-height: 1.6; color: rgba(244, 239, 225, 0.4); }
-  .footer-legal a { color: rgba(244, 239, 225, 0.55); text-decoration: none; }
-  .footer-legal a:hover { text-decoration: underline; }
+/* ---------- FAQ ---------- */
+.faq { border-bottom: 1px solid var(--line); }
+.faq details { border-top: 1px solid var(--line); }
+.faq summary { list-style: none; cursor: pointer; position: relative; padding: 24px 48px 24px 0; font-size: clamp(19px, 2vw, 24px); font-weight: 500; letter-spacing: -.018em; line-height: 1.3; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; position: absolute; right: 0; top: 20px; font-size: 28px; font-weight: 400; line-height: 1; color: var(--sand); }
+.faq details[open] summary::after { content: "\2212"; }
+.faq details p { color: var(--dim); max-width: 38em; padding: 0 48px 28px 0; }
 
-  /* ---------- Fade in ---------- */
-  .fade-in { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease, transform 0.7s ease; }
-  .fade-in.in-view { opacity: 1; transform: translateY(0); }
+/* ---------- Final + footer ---------- */
+.final h2 { font-size: clamp(40px, 7vw, 96px); max-width: 11em; }
+.final .lead { margin-top: clamp(24px, 3vw, 36px); }
+.phone { display: inline-block; margin-top: 32px; font-size: clamp(20px, 2.2vw, 26px); font-weight: 500; letter-spacing: -.02em; text-decoration: none; font-variant-numeric: tabular-nums; }
+.phone:hover { color: var(--sand); }
+footer.foot { background: var(--deep); padding: 36px 0 48px; }
+.foot .now { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; font-size: 15px; color: var(--text); }
+.foot .now i { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex: none; }
+.foot p { font-size: 13px; color: var(--muted); line-height: 1.7; display: flex; flex-wrap: wrap; gap: 4px 28px; }
+.foot a { text-decoration: none; }
+.foot a:hover { color: var(--text); }
 
-  /* ---------- Responsive ---------- */
-  @media (max-width: 980px) {
-    .hero-grid { grid-template-columns: 1fr; }
-    .hero-visual { max-width: 480px; }
-    .compare-grid, .demo-grid, .case-teaser { grid-template-columns: 1fr; }
-    .steps-grid { grid-template-columns: repeat(2, 1fr); }
-    .features-grid { grid-template-columns: repeat(2, 1fr); }
-    .pricing-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width: 720px) {
-    .nav-links, .nav-actions .btn-outline { display: none; }
-    .nav-toggle { display: block; }
-    .nav.open .nav-links {
-      display: flex; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg);
-      flex-direction: column; padding: 20px 24px; gap: 18px; border-bottom: 1px solid var(--border);
-    }
-    .steps-grid, .features-grid, .pricing-grid { grid-template-columns: 1fr; }
-    .section { padding: 64px 0; }
-    .hero { padding: 56px 0 64px; }
-    .hero-actions .btn { width: 100%; }
-  }
-  @media (max-width: 480px) {
-    .container { padding: 0 20px; }
-    .hero h1 { font-size: clamp(24px, 8vw, 36px); }
-    .section-head h2 { font-size: clamp(22px, 7vw, 40px); }
-    footer h2 { font-size: clamp(22px, 7vw, 38px); }
-    .case-teaser__info, .case-teaser__quote { padding: 26px 22px; }
-    .case-teaser__quote p { font-size: 16px; line-height: 1.5; }
-  }
+/* ---------- Loss calculator ---------- */
+.calc { display: grid; grid-template-columns: minmax(0, 1fr); gap: 48px var(--gap); }
+.calc-in { display: grid; gap: clamp(16px, 2vw, 26px); align-content: start; min-width: 0; }
+.cl { font-size: clamp(22px, 2.5vw, 34px); line-height: 1.45; letter-spacing: -.02em; font-weight: 500; }
+.nf { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; vertical-align: baseline; }
+.nf input {
+  font: inherit; letter-spacing: -.02em; color: var(--text); background: transparent;
+  border: 0; border-bottom: 2px solid var(--sand); border-radius: 0; padding: 0 2px; margin: 0;
+  text-align: center; font-variant-numeric: tabular-nums; outline: 0; min-width: 2ch; transition: background-color .2s, border-color .2s;
+}
+.nf input:hover, .nf input:focus { background: var(--sand-soft); }
+.nf input:focus { border-bottom-color: var(--text); }
+.st { display: inline-flex; flex-direction: column; gap: 3px; }
+.st button { position: relative; width: 26px; height: 20px; padding: 0; cursor: pointer; background: transparent; border: 1px solid var(--line2); border-radius: 5px; transition: border-color .2s; }
+.st button::before { content: ""; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; border-left: 1.5px solid var(--sand); border-top: 1.5px solid var(--sand); transform: translate(-50%, -25%) rotate(45deg); }
+.st button.dn::before { transform: translate(-50%, -75%) rotate(225deg); }
+.st button:hover { border-color: var(--sand); }
+
+/* Yearly column chart under the inputs */
+.cchart { margin-top: clamp(16px, 2vw, 24px); padding-top: 22px; border-top: 1px solid var(--line2); }
+.cchart .k { margin-top: 0; }
+.cbars { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); height: 230px; margin-top: 18px; align-items: end; }
+.cb { display: flex; flex-direction: column; justify-content: flex-end; height: 100%; min-width: 0; }
+.cb-v { font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums; margin-bottom: 8px; white-space: nowrap; }
+.cb i { display: block; width: min(100%, 72px); height: 10%; min-height: 4px; background: var(--accent); transition: height .3s ease; }
+.cb.ret i { background: var(--sand); }
+.cb-l { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--line2); font-size: 13px; line-height: 1.35; color: var(--muted); }
+
+.calc-out { display: grid; gap: clamp(24px, 2.6vw, 34px); align-content: start; min-width: 0; }
+.res { border-top: 1px solid var(--line2); padding-top: 14px; min-width: 0; }
+.res-k { font-size: 13px; font-weight: 500; line-height: 1.45; letter-spacing: .07em; text-transform: uppercase; color: var(--sand); }
+.res-k span { color: var(--muted); margin-left: .7em; }
+.res-v, .tot-v { display: block; white-space: nowrap; overflow: hidden; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums lining-nums; }
+.res-v { margin-top: 10px; font-size: clamp(40px, 5vw, 68px); letter-spacing: -.05em; color: var(--accent); }
+.res-v .cur, .tot-v .cur { font-size: .45em; font-weight: 400; letter-spacing: 0; margin-left: .2em; color: var(--muted); }
+.res-c { margin-top: 10px; max-width: 32em; font-size: 15px; line-height: 1.5; color: var(--dim); }
+.calc-total { padding: clamp(24px, 4vw, 48px); background: var(--deep); border-radius: 4px; min-width: 0; }
+.tot-k { font-size: clamp(20px, 2.4vw, 30px); font-weight: 500; letter-spacing: -.02em; line-height: 1.3; }
+.tot-v { margin-top: 14px; font-size: clamp(64px, 13vw, 184px); letter-spacing: -.06em; line-height: .92; padding-bottom: .04em; }
+.tot-n { margin-top: clamp(18px, 2.2vw, 26px); font-size: clamp(20px, 2.2vw, 28px); line-height: 1.35; letter-spacing: -.02em; }
+.tot-n b { font-weight: 700; color: var(--sand); }
+.calc-total .btns { margin-top: clamp(28px, 3.4vw, 40px); }
+.calc-note { margin-top: 18px; max-width: 46em; }
+
+/* ---------- Reactivation (deep band) ---------- */
+#return { padding: calc(var(--sec) * 1.5) 0; }
+.h-xl { font-size: clamp(42px, 6.6vw, 94px); max-width: 12em; }
+.lost { list-style: none; display: grid; gap: clamp(14px, 1.8vw, 22px); }
+.lost li { border-left: 2px solid var(--sand); padding: 4px 0 4px clamp(16px, 2vw, 24px); font-size: clamp(22px, 2.7vw, 34px); line-height: 1.25; letter-spacing: -.025em; font-weight: 500; }
+.how h3 { font-size: clamp(24px, 2.6vw, 32px); margin-bottom: 18px; }
+.final-line { margin-top: var(--blk); padding-top: clamp(28px, 3.4vw, 44px); border-top: 1px solid var(--sand-line); font-size: clamp(30px, 4.8vw, 66px); font-weight: 700; line-height: 1.04; letter-spacing: -.045em; text-wrap: balance; }
+
+/* Student base: one dot = one student */
+.base { margin-top: var(--blk); }
+.dots { --cols: 20; display: grid; grid-template-columns: repeat(var(--cols), 6px); gap: 10px; }
+.dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--text); transition: background-color .5s ease, opacity .5s ease; }
+.dots i.gone { background: var(--muted); opacity: .3; }
+.dots i.back { background: var(--sand); opacity: 1; }
+.base-cap { margin-top: 28px; max-width: 26em; font-size: clamp(19px, 1.9vw, 23px); line-height: 1.4; letter-spacing: -.015em; font-weight: 500; color: var(--text); transition: opacity .8s ease; }
+.js .base-cap { opacity: 0; }
+.js .base-cap.show { opacity: 1; }
+
+/* ---------- Reveal: opacity only ---------- */
+.js .rv { opacity: 0; transition: opacity .9s ease; }
+.js .rv.in { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .js .rv { opacity: 1; transition: none; }
+  .js .rv:not(.in) .c-bars i, .c-bars i { transform: none; transition: none; }
+  .msg.typing span, .pulse { animation: none; opacity: .6; }
+  .tlink span, .cb i, .dots i, .base-cap { transition: none; }
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 520px) {
+  .btns .btn { flex: 1 1 100%; }
+  .top nav a.hide-s { display: none; }
+  .phones { gap: 12px; }
+  .handset { border-radius: 26px; padding: 9px 7px 10px; }
+  .handset .screen { border-radius: 18px; }
+  .hero-chat .handset { border-radius: 32px; }
+  .cbars { height: 190px; }
+}
+
+/* ---------- Tablet+ ---------- */
+@media (min-width: 640px) {
+  .about { flex-direction: row; align-items: flex-start; gap: var(--gap); }
+  .photo { width: 200px; }
+  .crow { grid-template-columns: minmax(0, 2fr) minmax(0, 5fr) minmax(0, 4fr); }
+  .c-num { font-size: min(9vw, 104px); justify-content: flex-end; }
+}
+
+/* ---------- Desktop ---------- */
+@media (min-width: 960px) {
+  body { font-size: 18px; }
+  .grid { grid-template-columns: repeat(12, minmax(0, 1fr)); row-gap: 0; }
+  .lbl { grid-column: 1 / 4; padding-top: .2em; }
+  .main { grid-column: 4 / 13; }
+  .full { grid-column: 1 / -1; }
+  .sub .lbl { padding-top: .35em; }
+  .hero-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  .hero-copy { grid-column: 1 / 8; }
+  .hero-chat { grid-column: 8 / 13; }
+  .hero-chat .handset { margin: 0 0 0 auto; }
+  .trio { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .incl { columns: 2; }
+  .feats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .steps { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  .step { grid-column: 4 / 13; padding-left: calc(var(--nf) * 1.02); }
+  .step .num { left: calc(var(--nf) * -.36); }
+  .talk-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: end; }
+  .talk-copy { grid-column: 1 / 8; }
+  .talk-phone { grid-column: 9 / 13; width: 100%; margin: 0 0 calc(var(--sec) * -1.4); }
+  .calc { grid-template-columns: repeat(12, minmax(0, 1fr)); row-gap: var(--blk); }
+  .calc-in { grid-column: 1 / 7; }
+  .calc-out { grid-column: 7 / 13; }
+  .calc-total { grid-column: 1 / -1; }
+}
 </style>
+</head>
+<body>
 
-<header>
-  <nav class="nav" id="nav">
-    <a href="#top" class="brand">
-      <span class="brand-mark">i</span>
-      idmAI
-    </a>
-    <ul class="nav-links">
-      <li><a href="#product">Продукт</a></li>
-      <li><a href="#how">Как работает</a></li>
-      <li><a href="/cases/">Кейсы</a></li>
-      <li><a href="#pricing">Цены</a></li>
-      <li><a href="#contacts">Контакты</a></li>
-    </ul>
-    <div class="nav-actions">
-      <a href="#demo" class="btn btn-outline btn-sm">Посмотреть демо</a>
-      <a href="https://t.me/davletmuratovai" target="_blank" rel="noopener" class="btn btn-dark btn-sm">Написать</a>
-      <button class="nav-toggle" id="navToggle" aria-label="Меню">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
+<div class="wrap top">
+  <a class="logo" href="#">idmAI</a>
+  <nav aria-label="Навигация">
+    <a href="#case">Кейс</a>
+    <a href="#price" class="hide-s">Цены</a>
+    <a href="https://t.me/ildar4ik1707" target="_blank" rel="noopener">Telegram</a>
   </nav>
-</header>
+</div>
 
-<main id="top">
+<main>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="container hero-grid">
-      <div>
-        <span class="eyebrow">ИИ-ассистент для образовательных центров</span>
-        <h1>Консультирует и записывает учеников,<br>пока вы занимаетесь <em>центром</em></h1>
-        <p class="lead">idmAI — ИИ-бот, который мгновенно отвечает родителям и ученикам в мессенджерах: подбирает преподавателя под предмет и цель, отвечает на вопросы о форматах и ценах, снимает сомнения и сам записывает на пробное занятие. Круглосуточно, без потерянных заявок.</p>
-        <div class="hero-actions">
-          <a href="#demo" class="btn btn-primary">Посмотреть демо</a>
-          <a href="#pricing" class="btn btn-outline">Смотреть цены</a>
-        </div>
+<!-- 01. Первый экран: текст слева, живой чат справа -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">ИИ-ассистент для языковых школ и&nbsp;образовательных центров</p>
+      <h1>Школа перестаёт терять заявки</h1>
+      <p class="lead">ИИ-ассистент отвечает родителям в&nbsp;Telegram, WhatsApp и&nbsp;MAX круглосуточно: консультирует по&nbsp;предметам и&nbsp;ценам, подбирает преподавателя под запрос и&nbsp;доводит до&nbsp;записи на&nbsp;пробное. Заявка сразу попадает в&nbsp;вашу CRM. Отдельно&nbsp;— возвращает учеников, которые перестали ходить.</p>
+      <div class="btns">
+        <a class="btn btn-a" href="https://t.me/ildar4ik1707" target="_blank" rel="noopener">Написать в Telegram</a>
+        <a class="btn btn-o" href="https://wa.me/79337659731" target="_blank" rel="noopener">WhatsApp</a>
       </div>
-      <div class="hero-visual fade-in">
-        <div class="hero-visual__head">
-          <div class="hero-visual__avatar"></div>
-          <div>
-            <strong>Полина · ИИ-ассистент</strong>
-            <span><span class="dot-live"></span> на связи</span>
+      <p class="hero-meta">30&nbsp;дней<span>·</span>от&nbsp;60&nbsp;000&nbsp;₽<span>·</span>всё остаётся школе</p>
+    </div>
+
+    <!-- Живое демо: виджет чата из site_ai, тот же API -->
+    <div class="hero-chat" id="demo">
+      <div class="handset"><div class="chat">
+        <div class="chat-head">
+          <div class="ava" aria-hidden="true">ИИ</div>
+          <div class="who"><b>ИИ-ассистент школы</b><span><i class="pulse" aria-hidden="true"></i>на связи</span></div>
+          <span class="chat-tag">Демо</span>
+        </div>
+        <div class="chat-msgs" id="chatMessages" aria-live="polite"></div>
+        <form class="chat-form" id="chatForm">
+          <label class="sr" for="chatInput">Сообщение ассистенту</label>
+          <input type="text" id="chatInput" placeholder="Напишите вопрос…" autocomplete="off" maxlength="500">
+          <button type="submit" id="chatSend">Отправить</button>
+        </form>
+      </div></div>
+      <p class="cap chat-note">Отвечает настоящий ассистент, не&nbsp;заготовка. Тот&nbsp;же движок, что у&nbsp;Ensina-me.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 02. Цифры Ensina-me: график было / стало, полосы растут при появлении -->
+<section class="results" id="results">
+  <div class="wrap rv">
+    <div class="lbl"><span class="n">02</span><span class="pl">Ensina-me, год с&nbsp;ассистентом</span></div>
+    <div class="chart">
+      <div class="crow">
+        <div class="c-lbl"><span>Лиды</span><span class="d">+49%</span></div>
+        <div class="c-bars" aria-hidden="true"><i style="--w: 67.3%"></i><i style="--w: 100%"></i></div>
+        <div class="c-num" aria-label="Лиды: было 37, стало 55"><span class="from">37<i class="arr"></i></span>55</div>
+      </div>
+      <div class="crow">
+        <div class="c-lbl"><span>Продажи</span><span class="d">+60%</span></div>
+        <div class="c-bars" aria-hidden="true"><i style="--w: 62.5%"></i><i style="--w: 100%"></i></div>
+        <div class="c-num" aria-label="Продажи: было 25, стало 40"><span class="from">25<i class="arr"></i></span>40</div>
+      </div>
+      <div class="crow">
+        <div class="c-lbl"><span>Конверсия</span><span class="d">+5 п.&nbsp;п.</span></div>
+        <div class="c-bars" aria-hidden="true"><i style="--w: 93.2%"></i><i style="--w: 100%"></i></div>
+        <div class="c-num" aria-label="Конверсия: было 68%, стало 73%"><span class="from">68<span class="pct">%</span><i class="arr"></i></span>73<span class="pct">%</span></div>
+      </div>
+    </div>
+    <p class="cap chart-cap">Школа Ensina-me, сентябрь 2026 к&nbsp;сентябрю 2025. Тонкая полоса&nbsp;— было, толстая&nbsp;— стало.</p>
+  </div>
+</section>
+
+<!-- 03. Проблема -->
+<section id="problem">
+  <div class="wrap grid">
+    <div class="lbl rv"><span class="n">03</span><span class="pl">Проблема</span></div>
+    <div class="main">
+      <p class="prose rv">Родитель пишет вечером или в&nbsp;выходные&nbsp;— и&nbsp;ждёт ответа до&nbsp;утра. Администратор не&nbsp;всегда на&nbsp;связи. Тот, кто ищет школу, пишет сразу в&nbsp;три места и&nbsp;остаётся там, где ответили первыми. <em>Заявка теряется не&nbsp;потому, что школа плохая, а&nbsp;потому что между вопросом и&nbsp;ответом прошло двенадцать часов.</em></p>
+      <div class="blk rv">
+        <p class="lead" style="color: var(--text)">Это не&nbsp;единственное место, где школа теряет деньги.</p>
+        <ul class="trio mt">
+          <li><b class="fig">30<small>раз в&nbsp;неделю одно и&nbsp;то&nbsp;же</small></b>Администратор отвечает на&nbsp;одни и&nbsp;те&nbsp;же&nbsp;вопросы по&nbsp;тридцать раз в&nbsp;неделю: сколько стоит, есть ли&nbsp;онлайн, с&nbsp;какого возраста берёте, когда ближайшая группа. Это часы в&nbsp;месяц, за&nbsp;которые никто не&nbsp;платит.</li>
+          <li><b class="fig">50%<small>не&nbsp;доходят до&nbsp;пробного</small></b>Половина записавшихся на&nbsp;пробное не&nbsp;доходит, потому что им&nbsp;никто не&nbsp;напомнил.</li>
+          <li><b class="fig">10+<small>учеников в&nbsp;год без продления</small></b>Ученик заканчивает уровень, не&nbsp;продлевает&nbsp;— и&nbsp;о&nbsp;нём больше никто не&nbsp;вспоминает. За&nbsp;год таких набираются десятки, и&nbsp;каждый из&nbsp;них когда-то уже выбрал вашу школу.</li>
+        </ul>
+      </div>
+      <div class="txt mt rv">
+        <p>Всё это не&nbsp;катастрофа. Школа работает, ученики ходят, деньги идут. Просто <mark>каждый месяц какая-то часть выручки утекает</mark> в&nbsp;места, которые никто не&nbsp;считает: в&nbsp;неотвеченные вечерние сообщения, в&nbsp;несостоявшиеся пробные, в&nbsp;учеников, о&nbsp;которых забыли. Эти деньги не&nbsp;появляются в&nbsp;отчётах как потеря&nbsp;— они просто не&nbsp;приходят.</p>
+      </div>
+      <p class="punch mt rv">Новый ученик стоит дорого. Потерянный не&nbsp;стоит ничего&nbsp;— и&nbsp;именно поэтому его никто не&nbsp;считает.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 04. Калькулятор потерь -->
+<section id="calc">
+  <div class="wrap">
+    <div class="grid">
+      <div class="lbl rv"><span class="n">04</span><span class="pl">Калькулятор</span></div>
+      <div class="main rv">
+        <h2>Посчитайте, сколько теряет ваша школа</h2>
+        <p class="lead mt">Три вопроса. Считаем по-честному, с&nbsp;заниженными допущениями&nbsp;— реальные цифры обычно выше.</p>
+      </div>
+    </div>
+
+    <div class="calc blk rv">
+      <div class="calc-in">
+        <p class="cl">У&nbsp;нас примерно <span class="nf"><input type="text" inputmode="numeric" autocomplete="off" data-k="students" data-min="10" data-max="2000" data-step="10" value="120" aria-label="Количество учеников"><span class="st"><button type="button" class="up" aria-label="Больше"></button><button type="button" class="dn" aria-label="Меньше"></button></span></span> учеников</p>
+        <p class="cl">Средний чек за&nbsp;курс&nbsp;— <span class="nf"><input type="text" inputmode="numeric" autocomplete="off" data-k="check" data-min="3000" data-max="200000" data-step="1000" value="18 000" aria-label="Средний чек за курс, рублей"><span class="st"><button type="button" class="up" aria-label="Больше"></button><button type="button" class="dn" aria-label="Меньше"></button></span></span>&nbsp;₽</p>
+        <p class="cl">В&nbsp;месяц приходит <span class="nf"><input type="text" inputmode="numeric" autocomplete="off" data-k="leads" data-min="5" data-max="500" data-step="5" value="40" aria-label="Новых обращений в месяц"><span class="st"><button type="button" class="up" aria-label="Больше"></button><button type="button" class="dn" aria-label="Меньше"></button></span></span> новых обращений</p>
+        <div class="cchart" aria-hidden="true">
+          <p class="k">Потери за&nbsp;год, если ничего не&nbsp;менять</p>
+          <div class="cbars">
+            <div class="cb"><span class="cb-v" id="cbSlowV">432 тыс.</span><i id="cbSlow"></i><span class="cb-l">Медленные ответы</span></div>
+            <div class="cb"><span class="cb-v" id="cbNoshowV">648 тыс.</span><i id="cbNoshow"></i><span class="cb-l">Неявки на&nbsp;пробное</span></div>
+            <div class="cb ret"><span class="cb-v" id="cbBaseV">648 тыс.</span><i id="cbBase"></i><span class="cb-l">Ушедшие из&nbsp;базы</span></div>
           </div>
         </div>
-        <div class="bubble user">Нужен репетитор по математике, 6 класс, подтянуть успеваемость</div>
-        <div class="bubble bot">Рекомендую Анну Сергеевну — эксперт по математике 5–11 классов, отлично подтягивает успеваемость. Запишу на бесплатное пробное занятие?</div>
-        <div class="bubble user">Да</div>
-        <div class="bubble bot">Записала заявку — менеджер свяжется и подтвердит удобное время 🌿</div>
+      </div>
+
+      <div class="calc-out" aria-live="polite">
+        <div class="res">
+          <p class="res-k">Теряется на&nbsp;медленных ответах<span>в&nbsp;месяц</span></p>
+          <p class="res-v" id="rSlow"><span class="v">36&nbsp;000</span><span class="cur">₽</span></p>
+          <p class="res-c">Пятая часть обращений приходит вне рабочего времени. Без мгновенного ответа большая часть из&nbsp;них уходит туда, где ответили первыми.</p>
+        </div>
+        <div class="res">
+          <p class="res-k">Теряется на&nbsp;неявках<span>в&nbsp;месяц</span></p>
+          <p class="res-v" id="rNoshow"><span class="v">54&nbsp;000</span><span class="cur">₽</span></p>
+          <p class="res-c">Примерно четверть обращений доходит до&nbsp;записи на&nbsp;пробное, и&nbsp;около трети записавшихся не&nbsp;приходят, потому что им&nbsp;никто не&nbsp;напомнил.</p>
+        </div>
+        <div class="res">
+          <p class="res-k">Лежит в&nbsp;базе и&nbsp;не&nbsp;возвращается<span>за&nbsp;год</span></p>
+          <p class="res-v" id="rBase"><span class="v">648&nbsp;000</span><span class="cur">₽</span></p>
+          <p class="res-c">За&nbsp;год примерно треть учеников заканчивает уровень или пропадает и&nbsp;не&nbsp;возвращается. Каждому из&nbsp;них когда-то уже подошла ваша школа.</p>
+        </div>
+      </div>
+
+      <div class="calc-total">
+        <p class="tot-k">В&nbsp;месяц мимо кассы проходит около</p>
+        <p class="tot-v" id="rTotal"><span class="v">90&nbsp;000</span><span class="cur">₽</span></p>
+        <p class="tot-n">Чтобы окупить работу, достаточно вернуть <b id="rN">6 учеников</b>.</p>
+        <div class="btns"><a class="btn btn-a" href="https://t.me/ildar4ik1707" target="_blank" rel="noopener">Проверить на&nbsp;моих данных</a></div>
+        <p class="cap calc-note">Это оценка по&nbsp;средним допущениям, а&nbsp;не&nbsp;прогноз. Точные цифры по&nbsp;вашей школе видно только в&nbsp;вашей CRM&nbsp;— на&nbsp;созвоне посмотрим их&nbsp;вместе.</p>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- PROBLEM / SOLUTION -->
-  <section class="section" id="product">
-    <div class="container">
-      <div class="section-head fade-in">
-        <span class="eyebrow">Проблема и решение</span>
-        <h2>Вы не должны терять заявки, пока заняты занятиями и расписанием</h2>
-        <p>Пока вы ведёте урок или занимаетесь расписанием, родители пишут в мессенджеры и ждут — а тот, кто ищет репетитора, пишет сразу в несколько центров и уходит к тому, кто ответил первым.</p>
+<!-- 05. Возврат учеников: отдельный модуль, своя полоса фона -->
+<section id="return">
+  <div class="wrap grid">
+    <div class="lbl rv"><span class="n">05</span><span class="pl">Возврат учеников</span></div>
+    <div class="main">
+      <div class="rv">
+        <p class="eyebrow">Отдельный модуль</p>
+        <h2 class="h-xl">Возврат учеников, о&nbsp;которых забыли</h2>
       </div>
-      <div class="compare-grid">
-        <div class="compare-card bad fade-in">
-          <h3>Сейчас</h3>
-          <ul>
-            <li><span class="mark x">✕</span> Родители ждут ответа часами, особенно вечером и в выходные</li>
-            <li><span class="mark x">✕</span> Заявки на подбор преподавателя теряются или обрабатываются с задержкой</li>
-            <li><span class="mark x">✕</span> Приходится вручную отвечать на одни и те же вопросы про предметы, форматы и цены</li>
-            <li><span class="mark x">✕</span> Пока вы отвечаете одному — другие уходят к конкурентам</li>
-          </ul>
-        </div>
-        <div class="compare-card good fade-in">
-          <h3>С idmAI</h3>
-          <ul>
-            <li><span class="mark v">✓</span> Ответ родителю приходит за секунды, в любое время суток</li>
-            <li><span class="mark v">✓</span> Бот подбирает преподавателя под предмет, класс и цель</li>
-            <li><span class="mark v">✓</span> Ни одна заявка не теряется — бот доводит до записи на пробное</li>
-            <li><span class="mark v">✓</span> Заявка и контакты сразу попадают к вам или в CRM</li>
-          </ul>
-        </div>
+      <div class="txt blk rv" style="margin-top: clamp(48px, 6vw, 80px)">
+        <p>Все CRM для школ начинают работать, когда ученик уже пришёл: расписание, оплаты, посещаемость, прогресс. Это полезно. Но&nbsp;ни&nbsp;одна из&nbsp;них не&nbsp;занимается теми, кто ушёл.</p>
+        <p><b>А&nbsp;в&nbsp;вашей базе они есть, и&nbsp;их&nbsp;больше, чем кажется.</b></p>
       </div>
-    </div>
-  </section>
-
-  <!-- HOW IT WORKS -->
-  <section class="section section-alt" id="how">
-    <div class="container">
-      <div class="section-head fade-in">
-        <span class="eyebrow">Как это работает</span>
-        <h2>От первого сообщения до записи на пробное — без вашего участия</h2>
+      <ul class="lost mt rv">
+        <li>Тот, кто закончил A2 и&nbsp;не&nbsp;записался на&nbsp;B1.</li>
+        <li>Тот, кто перестал ходить в&nbsp;марте и&nbsp;не&nbsp;вернулся.</li>
+        <li>Тот, кто сходил на&nbsp;пробное, но&nbsp;так и&nbsp;не&nbsp;начал.</li>
+      </ul>
+      <div class="txt mt rv">
+        <p>Каждый из&nbsp;них когда-то уже выбрал вашу школу. Ему не&nbsp;нужно объяснять, кто вы, где вы&nbsp;находитесь и&nbsp;как у&nbsp;вас преподают. <mark>Он&nbsp;просто выпал из&nbsp;потока</mark>&nbsp;— и&nbsp;никто за&nbsp;ним не&nbsp;вернулся, потому что это ничья задача: администратор занят новыми, преподаватель ведёт занятия, а&nbsp;CRM показывает только тех, кто ходит сейчас.</p>
       </div>
-      <div class="steps-grid">
-        <div class="step-card fade-in">
-          <div class="step-num">01</div>
-          <h3>Родитель или ученик пишет</h3>
-          <p>В Telegram, WhatsApp, Max или ВКонтакте — там, где удобно.</p>
-        </div>
-        <div class="step-card fade-in">
-          <div class="step-num">02</div>
-          <h3>ИИ отвечает мгновенно</h3>
-          <p>По вашим предметам, преподавателям, форматам и ценам.</p>
-        </div>
-        <div class="step-card fade-in">
-          <div class="step-num">03</div>
-          <h3>Ведёт диалог и подбирает</h3>
-          <p>Уточняет предмет, класс и цель, предлагает подходящего преподавателя, снимает сомнения.</p>
-        </div>
-        <div class="step-card fade-in">
-          <div class="step-num">04</div>
-          <h3>Оформляет заявку</h3>
-          <p>Передаёт заявку и контакты вам или в CRM и записывает на пробное занятие.</p>
+      <figure class="base">
+        <div class="dots" id="dots" aria-hidden="true"></div>
+        <figcaption class="base-cap" id="dotsCap">Треть базы уходит за&nbsp;год. Вернуть каждого четвёртого из&nbsp;них&nbsp;— реальная задача, и&nbsp;её&nbsp;никто не&nbsp;делает.</figcaption>
+      </figure>
+      <div class="how blk rv">
+        <h3>Как это работает</h3>
+        <div class="txt">
+          <p>Ассистент разбирает историю в&nbsp;вашей CRM и&nbsp;сам находит эти группы: по&nbsp;дате последнего занятия, по&nbsp;завершённому уровню, по&nbsp;несостоявшемуся пробному.</p>
+          <p>Дальше пишет каждому&nbsp;— не&nbsp;рассылкой «у&nbsp;нас скидка», а&nbsp;<mark>сообщением под конкретную ситуацию</mark>: какой уровень он&nbsp;закончил, что логично идёт следующим, когда стартует подходящая группа и&nbsp;у&nbsp;какого преподавателя.</p>
+          <p>Кто ответил&nbsp;— попадает в&nbsp;обычный диалог с&nbsp;ассистентом: тот отвечает на&nbsp;вопросы, подбирает расписание и&nbsp;доводит до&nbsp;записи. Готовую заявку принимает администратор.</p>
+          <p><mark>Настраивается один раз и&nbsp;работает дальше само.</mark> Каждый месяц в&nbsp;эти группы попадают новые люди, и&nbsp;каждый месяц ассистент их&nbsp;обрабатывает.</p>
         </div>
       </div>
     </div>
-  </section>
+    <p class="final-line full rv">Привлечь нового ученика стоит в&nbsp;разы дороже, чем вернуть того, кто уже учился у&nbsp;вас.</p>
+  </div>
+</section>
 
-  <!-- FEATURES -->
-  <section class="section">
-    <div class="container">
-      <div class="section-head fade-in">
-        <span class="eyebrow">Возможности</span>
-        <h2>Всё, что нужно центру от ИИ-ассистента</h2>
+<!-- 06. Кейс Ensina-me -->
+<section id="case">
+  <div class="wrap">
+    <div class="grid">
+      <div class="lbl rv"><span class="n">06</span><span class="pl">Кейс</span></div>
+      <div class="main rv">
+        <h2>Как это работает у&nbsp;школы Ensina-me</h2>
       </div>
-      <div class="features-grid">
-        <div class="feature-card fade-in">
-          <div class="feature-icon">💬</div>
-          <h3>Мессенджеры</h3>
-          <p>Работает в Telegram, WhatsApp, Max и VK — там, где уже общаются ваши клиенты.</p>
-        </div>
-        <div class="feature-card fade-in">
-          <div class="feature-icon">💆</div>
-          <h3>Подбирает преподавателя</h3>
-          <p>Под предмет, класс и цель ученика — по вашей базе педагогов.</p>
-        </div>
-        <div class="feature-card fade-in">
-          <div class="feature-icon">🧠</div>
-          <h3>Помнит контекст</h3>
-          <p>Ведёт диалог как живой администратор, не переспрашивая то, что клиент уже сказал.</p>
-        </div>
-        <div class="feature-card fade-in">
-          <div class="feature-icon">🔗</div>
-          <h3>Интеграция с CRM</h3>
-          <p>amoCRM и другие — заявки и контакты заносятся автоматически.</p>
-        </div>
-        <div class="feature-card fade-in">
-          <div class="feature-icon">⏰</div>
-          <h3>Напоминания</h3>
-          <p>Сам напоминает о пробном занятии, снижая процент неявок.</p>
-        </div>
-        <div class="feature-card fade-in">
-          <div class="feature-icon">🌙</div>
-          <h3>Круглосуточно</h3>
-          <p>Отвечает ночью, в выходные и праздники — без выгорания и больничных.</p>
+    </div>
+
+    <div class="grid sub blk rv">
+      <div class="lbl">Что было</div>
+      <div class="main txt">
+        <p>Школа португальского и&nbsp;испанского в&nbsp;Москве: 24 преподавателя, 22 группы, онлайн и&nbsp;офлайн, подготовка к&nbsp;экзаменам DELE, CAPLE и&nbsp;Celpe-Bras.</p>
+        <p>Сайт работал на&nbsp;CMS десятилетней давности: расписание правилось вручную через разработчика, часть страниц не&nbsp;открывалась с&nbsp;телефона, актуальные цены жили в&nbsp;голове у&nbsp;администратора. Заявки приходили в&nbsp;WhatsApp и&nbsp;Telegram вперемешку с&nbsp;личными сообщениями. <mark>Вечерние обращения обрабатывались на&nbsp;следующий день</mark>, а&nbsp;часть просто терялась в&nbsp;переписке.</p>
+        <p>Руководитель школы сам вёл занятия и&nbsp;не&nbsp;мог прерывать урок ради каждого нового обращения.</p>
+      </div>
+    </div>
+    <div class="grid sub blk rv">
+      <div class="lbl">Что сделали</div>
+      <div class="main">
+        <ul class="rows">
+          <li><h3>ИИ-ассистент</h3><p>Отвечает в&nbsp;Telegram и&nbsp;на&nbsp;сайте: консультирует по&nbsp;языкам, уровням, форматам и&nbsp;ценам, уточняет цель обучения, подбирает преподавателя из&nbsp;базы школы и&nbsp;доводит до&nbsp;записи на&nbsp;пробное. Заявка с&nbsp;контактами и&nbsp;запросом автоматически попадает в&nbsp;AlfaCRM, администратор получает уведомление.</p></li>
+          <li><h3>Новый сайт</h3><p>Больше двадцати страниц: карточки всех преподавателей с&nbsp;биографиями, расписание 22 групп с&nbsp;фильтром по&nbsp;языкам, страницы экзаменов, корпоративного обучения и&nbsp;разговорного клуба, онлайн-оплата, блог. Поставили CMS, чтобы администратор правил тексты и&nbsp;фото сам, без разработчика.</p></li>
+          <li><h3>Мобильное приложение</h3><p>Упражнения по&nbsp;уровням, прогресс ученика, подписка через код, push-уведомления. Опубликовано в&nbsp;App Store и&nbsp;RuStore.</p></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid sub blk rv">
+      <div class="lbl">Что получила школа</div>
+      <div class="main shots">
+        <figure>
+          <div class="browser">
+            <div class="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span>ensina-me.ru</span></div>
+            <!-- СКРИНШОТ: главная ensina-me.ru, файл img/ensina-site.webp -->
+            <div class="screen" style="aspect-ratio: 2000 / 972"><img src="img/ensina-site.webp" width="2000" height="972" loading="lazy" decoding="async" alt="Главная страница сайта ensina-me.ru"></div>
+          </div>
+          <figcaption><b>Главная ensina-me.ru.</b> Новый сайт, больше двадцати страниц: преподаватели, расписание 22 групп, экзамены, онлайн-оплата.</figcaption>
+        </figure>
+        <div class="phones">
+          <figure>
+            <!-- СКРИНШОТ: переписка с ботом, файл img/ensina-bot.webp -->
+            <div class="handset"><div class="screen"><img src="img/ensina-bot.webp" width="690" height="1500" loading="lazy" decoding="async" alt="Переписка с ботом школы Ensina-me в Telegram"></div></div>
+            <figcaption><b>Бот в&nbsp;Telegram.</b> Вопрос родителя и&nbsp;ответ ассистента.</figcaption>
+          </figure>
+          <figure>
+            <!-- СКРИНШОТ: приложение, файл img/ensina-app.webp -->
+            <div class="handset"><div class="screen"><img src="img/ensina-app.webp" width="690" height="1500" loading="lazy" decoding="async" alt="Главный экран приложения школы Ensina-me"></div></div>
+            <figcaption><b>Приложение.</b> App Store и&nbsp;RuStore.</figcaption>
+          </figure>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- CASES TEASER -->
-  <section class="section">
-    <div class="container">
-      <div class="section-head fade-in">
-        <span class="eyebrow">Кейсы</span>
-        <h2>Как ИИ-ассистент работает у реальных клиентов</h2>
-      </div>
-      <div class="case-teaser fade-in">
-        <div class="case-teaser__info">
-          <span class="case-tag">Языковая школа</span>
-          <h3><a href="https://ensina-me.ru" target="_blank" rel="noopener">Ensina-me</a> — школа португальского и испанского</h3>
-          <p>ИИ-ассистент в Telegram консультирует по языкам и уровню, квалифицирует клиента и передаёт заявку прямо в CRM — без участия администратора.</p>
-          <a href="/cases/" class="btn btn-dark">Смотреть все кейсы</a>
-        </div>
-        <blockquote class="case-teaser__quote">
-          <p>«Теперь заявки не теряются — это действительно прорыв»</p>
-          <cite>— Дерио, руководитель <a href="https://ensina-me.ru" target="_blank" rel="noopener">Ensina-me</a></cite>
+    <div class="grid sub blk">
+      <div class="lbl rv">Отзывы</div>
+      <div class="main">
+        <blockquote class="review rv">
+          <p class="bigq" aria-hidden="true">Теперь заявки не&nbsp;теряются&nbsp;— это действительно прорыв</p>
+          <p>Обычно я отвечаю на входящие звонки на автомате: вежливо говорю «спасибо, сейчас нет необходимости» и кладу трубку. Но в этот раз я почему-то решил дослушать предложение до конца. И меня зацепило одно слово — «ИИ для приёма заявок в Telegram».</p>
+          <p>Проблема нашей школы была в том, что администратор часто вне зоны доступа, а я сам не могу прервать урок ради каждого нового ученика. В итоге мы теряли заявки. Услышав про решение, я задал пару уточняющих вопросов — так мы и познакомились с Ильдаром.</p>
+          <p>Дальше мы переписывались в WhatsApp, и он скинул мне демо-видео работы ИИ-администратора. Мне понравилось, и мы договорились о встрече, чтобы детально обсудить мои задачи и функции, которые нужны именно для моей школы.</p>
+          <p>Ильдар очень внимательно слушал, составил чёткое техническое задание, прислал проект и смету. Меня полностью устроили условия и стоимость, поэтому я сразу внёс предоплату 50%.</p>
+          <p>На протяжении всей работы он был на связи. Всё сделал оперативно: подключил бота, мы начали тестирование. Все ошибки в ответах и баги исправлялись моментально. Ильдар ответственно подошёл к делу, глубоко вник в специфику школы, и в итоге сделал бота, который общается с клиентами как живой человек.</p>
+          <p>На тестировании я так увлёкся, что специально придумывал новые вопросы, лишь бы бот не переводил меня в заявку, а продолжал диалог 😄</p>
+          <p>Огромное спасибо Ильдару за такого крутого ИИ-помощника! Теперь заявки не теряются — это действительно прорыв. Очень рекомендую!</p>
+          <footer><b>Дерио</b>, руководитель школы Ensina-me</footer>
+        </blockquote>
+        <blockquote class="review rv">
+          <p class="bigq" aria-hidden="true">Получилось решение два в&nbsp;одном</p>
+          <p>Хочу снова поблагодарить Ильдара за помощь и создание современного сайта для школы Ensina-me. Изначально мы отлично посотрудничали над созданием бота-ассистента для сбора заявок, а после этого перешли и к разработке сайта. В итоге получилось решение «два в одном»: новый современный сайт с интегрированным ботом и удобным меню для клиентов, которые ищут курсы.</p>
+          <p>Теперь посетители могут быстро ознакомиться с предложениями и ценами, а бот помогает им оперативно принять решение и оставить заявку. С Ильдаром было комфортно работать: он быстро понимал, что именно мы хотим, всегда был на связи и сразу вносил правки, если что-то нам не нравилось.</p>
+          <p>Надеюсь, что у него будет много желающих сотрудничать. Успехов в работе! Спасибо!</p>
+          <footer><b>Дерио</b>, руководитель школы Ensina-me</footer>
         </blockquote>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- DEMO -->
-  <section class="section section-alt" id="demo">
-    <div class="container">
-      <div class="section-head center fade-in" style="margin-left:auto;margin-right:auto;">
-        <span class="eyebrow" style="justify-content:center;">Демо</span>
-        <h2>Попробуйте прямо сейчас</h2>
-        <p>Это живой ИИ на GigaChat, который отвечает клиентам действующего репетиторского центра — задайте любой вопрос, как настоящий родитель или ученик.</p>
+<!-- 07. Живое демо: сам чат стоит на&nbsp;первом экране -->
+<section id="live">
+  <div class="wrap grid">
+    <div class="lbl rv"><span class="n">07</span><span class="pl">Живое демо</span></div>
+    <div class="main">
+      <h2 class="rv">Проверьте сами</h2>
+      <p class="lead mt rv">Ассистент на&nbsp;первом экране отвечает по-настоящему, без заготовок. Тот же&nbsp;движок работает у&nbsp;Ensina-me в&nbsp;Telegram и&nbsp;на&nbsp;сайте.</p>
+      <div class="tlinks col blk rv" style="margin-top: clamp(48px, 6vw, 80px)">
+        <a class="tlink" href="#demo">Задать вопрос ассистенту<span aria-hidden="true">→</span></a>
+        <a class="tlink" href="https://t.me/aitesttttttbot" target="_blank" rel="noopener">Написать боту в&nbsp;Telegram<span aria-hidden="true">→</span></a>
+        <a class="tlink" href="https://ensina-me.ru" target="_blank" rel="noopener">Открыть сайт школы<span aria-hidden="true">→</span></a>
       </div>
-      <div class="demo-grid">
-        <div class="demo-chat fade-in">
-          <div class="demo-chat__head">
-            <div class="demo-chat__avatar"></div>
-            <div>
-              <strong>Полина · ИИ-ассистент</strong>
-              <span class="status"><span class="dot-live"></span> на связи</span>
-            </div>
-            <span class="demo-chat__badge">Живой ИИ</span>
-          </div>
-          <div class="demo-chat__messages" id="chatMessages"></div>
-          <form class="demo-chat__form" id="chatForm">
-            <input type="text" id="chatInput" placeholder="Напишите сообщение…" autocomplete="off" maxlength="500" />
-            <button type="submit" id="chatSend" aria-label="Отправить">➤</button>
-          </form>
+    </div>
+  </div>
+</section>
+
+<!-- 08. Как ассистент разговаривает: текст слева, телефон справа -->
+<section id="talk">
+  <div class="wrap talk-grid">
+    <div class="talk-copy">
+      <div class="lbl rv"><span class="n">08</span><span class="pl">Диалог</span></div>
+      <h2 class="rv">Как ассистент разговаривает</h2>
+      <p class="prose blk rv" style="margin-top: clamp(36px, 4.4vw, 56px)"><em>Это не&nbsp;бот с&nbsp;кнопками «1&nbsp;—&nbsp;цены, 2&nbsp;—&nbsp;расписание».</em> Он&nbsp;ведёт разговор: понимает вопрос в&nbsp;свободной форме, помнит, что ему уже сказали, и&nbsp;не&nbsp;переспрашивает одно и&nbsp;то&nbsp;же.</p>
+      <div class="txt mt rv">
+        <p>Он&nbsp;знает только то, что знает ваша школа: ваши предметы, преподавателей, цены, форматы и&nbsp;расписание. Если вопрос выходит за&nbsp;эту рамку&nbsp;— <mark>он&nbsp;не&nbsp;выдумывает ответ, а&nbsp;передаёт разговор администратору</mark>.</p>
+        <p>Работает в&nbsp;Telegram, WhatsApp и&nbsp;MAX, и&nbsp;виджетом прямо на&nbsp;сайте&nbsp;— там, где клиенту удобно, а&nbsp;не&nbsp;там, где удобно вам.</p>
+        <p><a href="#demo">Попробуйте сами</a>&nbsp;— демо выше отвечает на&nbsp;тех же&nbsp;правилах.</p>
+      </div>
+    </div>
+    <figure class="talk-phone rv" aria-label="Переписка с ассистентом">
+      <!-- СКРИНШОТ: переписка с ассистентом, файл img/ensina-bot.webp (можно заменить другой перепиской) -->
+      <div class="handset"><div class="screen"><img src="img/ensina-bot.webp" width="690" height="1500" loading="lazy" decoding="async" alt="Переписка с ботом школы Ensina-me в Telegram"></div></div>
+    </figure>
+  </div>
+</section>
+
+<!-- 09. Что делает ассистент -->
+<section id="features">
+  <div class="wrap grid">
+    <div class="lbl rv"><span class="n">09</span><span class="pl">Возможности</span></div>
+    <div class="main">
+      <h2 class="rv">Что делает ассистент</h2>
+      <ul class="feats blk rv" style="margin-top: clamp(48px, 6vw, 80px)">
+        <li>Отвечает в&nbsp;Telegram, WhatsApp и&nbsp;MAX&nbsp;— там, где уже пишут ваши клиенты</li>
+        <li>Консультирует по&nbsp;предметам, форматам, ценам и&nbsp;уровням</li>
+        <li>Подбирает преподавателя под запрос из&nbsp;вашей базы</li>
+        <li>Доводит до&nbsp;записи на&nbsp;пробное занятие</li>
+        <li>Передаёт заявку и&nbsp;контакты в&nbsp;CRM</li>
+        <li>Напоминает о&nbsp;занятии и&nbsp;об&nbsp;оплате</li>
+        <li>Возвращает тех, кто перестал ходить: находит в&nbsp;CRM учеников, закончивших уровень и&nbsp;не&nbsp;продливших, и&nbsp;тех, кто пропал на&nbsp;два месяца, и&nbsp;пишет им&nbsp;сам</li>
+        <li>База знаний обновляется вами, без разработчика</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 10. Как проходит работа -->
+<section id="process">
+  <div class="wrap">
+    <div class="grid">
+      <div class="lbl rv"><span class="n">10</span><span class="pl">Процесс</span></div>
+      <div class="main"><h2 class="rv">30 дней от&nbsp;созвона до&nbsp;запуска</h2></div>
+    </div>
+    <ol class="steps blk rv" style="margin-top: clamp(56px, 7vw, 96px)">
+      <li class="step"><span class="num">01</span><div><h3>Созвон</h3><p>Разбираем, как у&nbsp;вас сейчас обрабатываются заявки и&nbsp;что теряется.</p></div></li>
+      <li class="step"><span class="num">02</span><div><h3>Материалы</h3><p>Вы передаёте список предметов, преподавателей, цен и&nbsp;расписание.</p></div></li>
+      <li class="step"><span class="num">03</span><div><h3>Сборка</h3><p>Собираю ассистента на&nbsp;ваших данных, подключаю CRM и&nbsp;мессенджеры.</p></div></li>
+      <li class="step"><span class="num">04</span><div><h3>Тест</h3><p>Вы проверяете на&nbsp;реальных вопросах, правлю на&nbsp;ходу.</p></div></li>
+      <li class="step"><span class="num">05</span><div><h3>Запуск</h3><p>Передаю доступы, показываю, как обновлять базу знаний.</p></div></li>
+    </ol>
+    <div class="grid" style="margin-top: 24px">
+      <p class="cap main">Срок считается с&nbsp;момента получения материалов.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 11. Что остаётся школе -->
+<section id="own">
+  <div class="wrap grid">
+    <div class="lbl rv"><span class="n">11</span><span class="pl">Что остаётся школе</span></div>
+    <div class="main">
+      <p class="prose rv" style="color: var(--text)">Бот, все доступы, код и&nbsp;база знаний принадлежат вам с&nbsp;момента запуска и&nbsp;продолжают работать без моего участия.</p>
+      <div class="mt rv">
+        <p class="cap assets-cap">Оформляется на&nbsp;школу, не&nbsp;на&nbsp;меня</p>
+        <ul class="assets"><li>Сервер</li><li>Аккаунты мессенджеров</li><li>Ключи доступа</li><li>Код</li><li>База знаний</li></ul>
+      </div>
+      <div class="txt blk rv">
+        <p>Я&nbsp;не&nbsp;держу вас на&nbsp;привязи. Сервер, аккаунты мессенджеров, ключи доступа и&nbsp;база знаний оформляются на&nbsp;школу&nbsp;— не&nbsp;на&nbsp;меня. <mark>Если завтра мы&nbsp;перестанем работать вместе, ничего не&nbsp;выключится.</mark></p>
+        <p>Подписки за&nbsp;сам факт работы бота нет. Остаются только расходы на&nbsp;сторонние сервисы&nbsp;— нейросеть и&nbsp;хостинг,&nbsp;— обычно одна‑две тысячи рублей в&nbsp;месяц, и&nbsp;<mark>платите вы&nbsp;их&nbsp;напрямую, а&nbsp;не&nbsp;мне</mark>.</p>
+        <p>Базу знаний вы&nbsp;правите сами: поменялись цены или преподаватели&nbsp;— обновили таблицу, бот начал отвечать по‑новому. Разработчик для этого не&nbsp;нужен.</p>
+        <p>Сопровождение за&nbsp;3&nbsp;000&nbsp;₽/мес&nbsp;— по&nbsp;желанию, если правки и&nbsp;мониторинг удобнее отдать мне. Первый месяц включён, отключается в&nbsp;любой момент, бот продолжает работать в&nbsp;прежнем режиме.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12. Цены -->
+<section id="price">
+  <div class="wrap grid">
+    <div class="lbl rv"><span class="n">12</span><span class="pl">Цены</span></div>
+    <div class="main">
+      <h2 class="rv">Стоимость</h2>
+      <div class="blk" style="margin-top: clamp(56px, 7vw, 96px)">
+        <div class="price p1 rv">
+          <h3>Школа под ключ</h3>
+          <div class="sum">100&nbsp;000<span class="cur">₽</span></div>
+          <p class="when">Если сайту больше пяти лет или его делали на&nbsp;скорую руку.</p>
+          <p class="k">Что входит</p>
+          <ul class="incl">
+            <li>Новый сайт: структура, тексты, адаптив под телефон, CMS для самостоятельных правок</li>
+            <li>ИИ-ассистент в&nbsp;Telegram, WhatsApp и&nbsp;MAX</li>
+            <li>Виджет чата на&nbsp;сайте</li>
+            <li>Интеграция с&nbsp;вашей CRM: заявки, контакты, источник</li>
+            <li>Напоминания о&nbsp;занятии и&nbsp;об&nbsp;оплате</li>
+            <li>Возврат учеников по&nbsp;истории CRM</li>
+            <li>База знаний, которую вы&nbsp;обновляете сами</li>
+            <li>30 дней бесплатных правок после запуска</li>
+          </ul>
         </div>
-        <div class="demo-tg-card fade-in">
-          <div class="tg-icon">✈️</div>
-          <h3>Хотите пообщаться в Telegram?</h3>
-          <p>Тот же ИИ-ассистент, только в привычном мессенджере — напишите ему прямо сейчас и проверьте на деле.</p>
-          <a href="https://t.me/aitesttttttbot" target="_blank" rel="noopener" class="btn btn-primary">Открыть демо-бота</a>
+        <div class="price p2 rv">
+          <h3>Система заявок</h3>
+          <div class="sum">60&nbsp;000<span class="cur">₽</span></div>
+          <p class="when">Если сайт свежий и&nbsp;менять его незачем.</p>
+          <p class="k">Что входит</p>
+          <ul class="incl">
+            <li>ИИ-ассистент в&nbsp;Telegram, WhatsApp и&nbsp;MAX</li>
+            <li>Виджет чата на&nbsp;ваш действующий сайт</li>
+            <li>Интеграция с&nbsp;вашей CRM</li>
+            <li>Напоминания о&nbsp;занятии и&nbsp;об&nbsp;оплате</li>
+            <li>Возврат учеников по&nbsp;истории CRM</li>
+            <li>База знаний, которую вы&nbsp;обновляете сами</li>
+            <li>30 дней бесплатных правок после запуска</li>
+          </ul>
+        </div>
+        <div class="terms rv">
+          <p>30 дней от&nbsp;получения материалов. Оплата 50/50: половина на&nbsp;старте, половина&nbsp;— когда вы&nbsp;увидели готового ассистента в&nbsp;работе.</p>
+          <p>Сопровождение&nbsp;— 3&nbsp;000&nbsp;₽/мес, первый месяц включён.</p>
+          <p class="cap" style="margin-top: 14px">Мобильное приложение для школы&nbsp;— отдельно, обсуждаем на&nbsp;созвоне.</p>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- PRICING -->
-  <section class="section" id="pricing">
-    <div class="container">
-      <div class="section-head fade-in">
-        <span class="eyebrow">Цены</span>
-        <h2>Стоимость подключения</h2>
-        <p>Разовая настройка под ваш центр — без абонентской платы за сам факт работы бота.</p>
-      </div>
-      <div class="pricing-grid">
-        <div class="price-card fade-in">
-          <h3>Старт</h3>
-          <div class="price">15 000 ₽</div>
-          <div class="price-note">Подключение CRM — +5 000 ₽</div>
-          <ul>
-            <li>— Один мессенджер на выбор (Telegram, WhatsApp или MAX)</li>
-            <li>— Консультация по предметам и ценам</li>
-            <li>— Подбор преподавателя под запрос</li>
-            <li>— Передача заявки вам</li>
-          </ul>
-          <a href="https://t.me/davletmuratovai" target="_blank" rel="noopener" class="btn btn-dark btn-block">Написать</a>
+<!-- Обо мне: временно скрыт. Чтобы вернуть, убрать атрибут hidden и перенумеровать секции 13–15 обратно в 14–16 -->
+<section id="about" hidden>
+  <div class="wrap grid">
+    <div class="lbl rv"><span class="n">13</span><span class="pl">Обо мне</span></div>
+    <div class="main about rv">
+      <div class="photo"><!-- ФОТО: портрет -->ИД</div>
+      <div class="about-txt">
+        <p>Меня зовут Ильдар. Я&nbsp;делаю это сам: от&nbsp;первого разговора до&nbsp;запуска вы&nbsp;общаетесь со&nbsp;мной, а&nbsp;не&nbsp;с&nbsp;менеджером, который пересказывает задачу разработчику.</p>
+        <div class="txt">
+          <p>Я&nbsp;собираю ИИ-ассистентов и&nbsp;сайты для образовательных центров под брендом idmAI. Не&nbsp;агентство: нет отдела продаж, нет аккаунт-менеджеров, нет очереди из&nbsp;тридцати проектов. Поэтому сроки, которые я&nbsp;называю, настоящие, а&nbsp;правка не&nbsp;ждёт своей очереди неделю.</p>
+          <p>Работаю так: сначала разбираюсь, как у&nbsp;школы устроена работа с&nbsp;заявками, и&nbsp;только потом предлагаю решение. <mark>Если вижу, что задача не&nbsp;решается ботом&nbsp;— говорю об&nbsp;этом прямо</mark>, а&nbsp;не&nbsp;продаю то, что умею.</p>
+          <p>Беру немного проектов одновременно, чтобы каждый вести лично. Иногда это значит, что ближайший слот&nbsp;— через пару недель.</p>
+          <p>Самозанятый, работаю по&nbsp;договору, с&nbsp;чеком. Сервер, доступы, код и&nbsp;база знаний оформляются на&nbsp;школу.</p>
         </div>
-        <div class="price-card fade-in">
-          <span class="price-badge">Популярный</span>
-          <h3>Оптимальный</h3>
-          <div class="price">27 000 ₽</div>
-          <div class="crm-note">Самая частая связка</div>
-          <ul>
-            <li>— Telegram + MAX или WhatsApp</li>
-            <li>— Интеграция с CRM</li>
-            <li>— Подбор преподавателя под запрос</li>
-            <li>— Ответы на частые вопросы</li>
-          </ul>
-          <a href="https://t.me/davletmuratovai" target="_blank" rel="noopener" class="btn btn-dark btn-block">Написать</a>
-        </div>
-        <div class="price-card highlight fade-in">
-          <span class="price-badge">Хит</span>
-          <h3>Максимальный</h3>
-          <div class="price">34 000 ₽</div>
-          <div class="crm-note">Три канала с полной интеграцией CRM</div>
-          <ul>
-            <li>— Telegram + MAX + WhatsApp</li>
-            <li>— Интеграция с CRM</li>
-            <li>— Единая база знаний</li>
-            <li>— Напоминания о пробном занятии</li>
-          </ul>
-          <a href="https://t.me/davletmuratovai" target="_blank" rel="noopener" class="btn btn-primary btn-block">Написать</a>
-        </div>
-        <div class="price-card fade-in">
-          <h3>Всё включено</h3>
-          <div class="price">50 000 ₽</div>
-          <div class="crm-note">Все мессенджеры с полной интеграцией CRM</div>
-          <ul>
-            <li>— Telegram + WhatsApp + VK + MAX</li>
-            <li>— Интеграция с CRM</li>
-            <li>— Приоритетная поддержка</li>
-            <li>— Индивидуальные сценарии</li>
-          </ul>
-          <a href="https://t.me/davletmuratovai" target="_blank" rel="noopener" class="btn btn-dark btn-block">Написать</a>
-        </div>
-      </div>
-
-      <div class="pricing-other fade-in">
-        <div>
-          <h3>Другие каналы и настройки</h3>
-          <p>Другие мессенджеры, интеграция на сайт и индивидуальные доработки обсуждаются отдельно.</p>
-        </div>
-        <a href="https://t.me/davletmuratovai" target="_blank" rel="noopener" class="btn btn-dark">Написать</a>
-      </div>
-
-      <div class="pricing-support fade-in">
-        <h3>Сопровождение — 3 000 ₽/мес (по желанию)</h3>
-        <p>Бот и все доступы к нему принадлежат вам с момента запуска и продолжают работать без сопровождения. Если хотите передать текущие задачи мне — оформляем сопровождение отдельно.</p>
-        <div class="support-sub">Что входит</div>
-        <ul>
-          <li>— До 2 часов правок в месяц (предметы, цены, ответы)</li>
-          <li>— Еженедельный мониторинг диалогов бота</li>
-          <li>— Приоритетная поддержка: ответ в течение 24 часов в рабочие дни, критичные сбои — до 4 часов</li>
-          <li>— Адаптация бота к изменениям на стороне мессенджеров и сервисов</li>
-        </ul>
-        <div class="price-note">Первый месяц входит в стоимость подключения. Отключить сопровождение можно в любой момент — бот продолжит работать в прежнем режиме.</div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- FAQ -->
-  <section class="section" id="faq">
-    <div class="container">
-      <div class="section-head fade-in">
-        <span class="eyebrow">FAQ</span>
-        <h2>Частые вопросы</h2>
-      </div>
-      <div class="faq-list fade-in">
-        <details class="faq-item">
-          <summary>Есть ли пробный период?</summary>
-          <div class="faq-a">У сервисов с самостоятельной настройкой пробный период есть, потому что вы получаете доступ и несколько дней заполняете предметы, цены и сценарии сами. Здесь пробовать нечего — я собираю бота под ваш центр на ваших данных. Вместо триала работает другое: 50% предоплата, я собираю и показываю готового бота на ваших преподавателях и предметах, оставшиеся 50% — только после того, как вы увидели его в работе.</div>
-        </details>
-        <details class="faq-item">
-          <summary>Чем это лучше обычной формы заявки на сайте?</summary>
-          <div class="faq-a">Форма помогает тем, кто уже знает, какой преподаватель нужен. Но большинство родителей не знают: «какой репетитор подойдёт сыну в 6 классе», «нам бы к ОГЭ подготовиться, с чего начать», «онлайн так же эффективно?». Форма им не поможет — уйдут без ответа. Бот отвечает мгновенно, подбирает преподавателя под предмет, класс и цель и доводит до пробного занятия.</div>
-        </details>
-        <details class="faq-item">
-          <summary>Почему разовый платёж, а не подписка?</summary>
-          <div class="faq-a">Готовые сервисы работают по подписке — 3–4 тыс. ₽/мес, за три года это 130–150 тыс. Здесь настроенный бот принадлежит вам с момента запуска: доступы, база знаний, код — всё передаётся вам, бот работает без моего участия. Разовая оплата за настройку, дальше только небольшие расходы на сторонние сервисы (нейросеть, хостинг) — обычно 1–2 тыс. ₽/мес суммарно. Сопровождение за 3 000 ₽/мес — опционально: если хотите, чтобы правки и мониторинг брал я, а не ваш сотрудник. Отключается в любой момент.</div>
-        </details>
-        <details class="faq-item">
-          <summary>Сколько времени занимает внедрение?</summary>
-          <div class="faq-a">Обычно 3–5 рабочих дней: собираем базу преподавателей, предметов и цен, настраиваем бота под ваш мессенджер и стиль общения, подключаем CRM и тестируем на реальных диалогах.</div>
-        </details>
-        <details class="faq-item">
-          <summary>Безопасны ли данные клиентов?</summary>
-          <div class="faq-a">Да. Токены и ключи доступа хранятся на сервере, а не в коде или на сайте. Переписки и контакты учеников и родителей не передаются третьим лицам и используются только для работы вашего бота.</div>
-        </details>
-        <details class="faq-item">
-          <summary>Можно ли самим менять ответы бота?</summary>
-          <div class="faq-a">Да, вы сможете обновлять базу предметов, преподавателей и цен самостоятельно — без обращения к разработчику и без остановки бота.</div>
-        </details>
-        <details class="faq-item">
-          <summary>Что если поменяются цены или преподаватели?</summary>
-          <div class="faq-a">Достаточно обновить таблицу с ценами и преподавателями — бот подхватит изменения автоматически и начнёт отвечать по новым данным.</div>
-        </details>
-      </div>
+<!-- 13. FAQ -->
+<section id="faq">
+  <div class="wrap grid">
+    <div class="lbl rv"><span class="n">13</span><span class="pl">Вопросы</span></div>
+    <div class="main faq rv">
+      <details>
+        <summary>Есть ли пробный период?</summary>
+        <p>У сервисов с самостоятельной настройкой пробный период есть, потому что вы получаете доступ и несколько дней заполняете предметы, цены и сценарии сами. Здесь пробовать нечего — я собираю бота под ваш центр на ваших данных. Вместо триала: 50% предоплата, я собираю и показываю готового бота на ваших преподавателях и предметах, <mark>остальные 50% — только после того, как вы увидели его в работе</mark>.</p>
+      </details>
+      <details>
+        <summary>Чем это лучше формы заявки на сайте?</summary>
+        <p>Форма помогает тем, кто уже знает, какой преподаватель нужен. Но большинство родителей не знают: какой репетитор подойдёт сыну в шестом классе, с чего начать подготовку к экзамену, так же ли эффективен онлайн. Форма им не поможет — они уйдут без ответа.</p>
+      </details>
+      <details>
+        <summary>Почему разовый платёж, а не подписка?</summary>
+        <p>Готовые сервисы работают по подписке, за три года это выходит в сотни тысяч. Здесь настроенный бот принадлежит вам с момента запуска: доступы, база знаний, код — всё ваше, бот работает без моего участия.</p>
+      </details>
+      <details>
+        <summary>А если у нас уже есть CRM?</summary>
+        <p>Это плюс. Я не заменяю вашу систему, а подключаюсь к ней: заявки от бота попадают туда же, куда и все остальные, а история учеников используется для возврата тех, кто перестал ходить.</p>
+      </details>
+      <details>
+        <summary>Безопасны ли данные клиентов?</summary>
+        <p>Токены и ключи доступа хранятся на сервере, а не в коде или на сайте. Переписки и контакты учеников и родителей не передаются третьим лицам и используются только для работы вашего бота.</p>
+      </details>
+      <details>
+        <summary>Что если поменяются цены или преподаватели?</summary>
+        <p>Достаточно обновить таблицу — бот подхватит изменения автоматически и начнёт отвечать по новым данным.</p>
+      </details>
+      <details>
+        <summary>Сколько школ вы&nbsp;уже сделали?</summary>
+        <p>Честно: Ensina-me&nbsp;— мой самый большой проект, и&nbsp;он&nbsp;описан здесь целиком, с&nbsp;цифрами и&nbsp;контактами школы. Вы&nbsp;можете открыть их&nbsp;сайт, написать боту и&nbsp;убедиться, что всё работает. Я&nbsp;предпочитаю показывать один проект подробно, чем список логотипов без подробностей.</p>
+      </details>
+      <details>
+        <summary>А&nbsp;если бот ответит клиенту неправильно?</summary>
+        <p>На&nbsp;тестировании вы&nbsp;задаёте ему любые вопросы и&nbsp;смотрите, что он&nbsp;отвечает&nbsp;— правки вношу на&nbsp;ходу, пока вас всё не&nbsp;устроит. Дальше: бот отвечает только по&nbsp;вашей базе знаний и&nbsp;не&nbsp;выдумывает, а&nbsp;на&nbsp;сложном вопросе передаёт разговор администратору. Если что-то всё же&nbsp;всплывёт после запуска&nbsp;— 30 дней правок входят в&nbsp;стоимость.</p>
+      </details>
+      <details>
+        <summary>У&nbsp;нас маленькая школа, нам подойдёт?</summary>
+        <p>Смотря что значит маленькая. Если у&nbsp;вас два преподавателя и&nbsp;десять учеников&nbsp;— скорее всего, вы&nbsp;справляетесь сами, и&nbsp;честнее сказать об&nbsp;этом сразу. Если преподавателей больше десяти, заявки идут в&nbsp;мессенджеры и&nbsp;кто-то из&nbsp;них точно теряется&nbsp;— подойдёт.</p>
+      </details>
+      <details>
+        <summary>Почему я&nbsp;должен доверять работу одному человеку, а&nbsp;не&nbsp;студии?</summary>
+        <p>Справедливый вопрос. В&nbsp;студии вас ведёт менеджер, а&nbsp;делает разработчик, которого вы&nbsp;не&nbsp;видите, и&nbsp;задача пересказывается дважды. У&nbsp;меня вы&nbsp;говорите напрямую с&nbsp;тем, кто делает. Минус: я&nbsp;беру мало проектов одновременно, и&nbsp;иногда ближайший слот&nbsp;— через пару недель.</p>
+      </details>
     </div>
-  </section>
+  </div>
+</section>
+
+<!-- 14. С чего начать -->
+<section id="start">
+  <div class="wrap grid">
+    <div class="lbl rv"><span class="n">14</span><span class="pl">Первый шаг</span></div>
+    <div class="main">
+      <h2 class="rv">С&nbsp;чего начать</h2>
+      <ol class="rows big num blk rv" style="margin-top: clamp(48px, 6vw, 80px)">
+        <li>Напишите мне в&nbsp;Telegram или WhatsApp. Я&nbsp;задам несколько вопросов: куда вам пишут клиенты, кто отвечает вечером, сколько преподавателей, какая CRM. На&nbsp;это уйдёт минут десять.</li>
+        <li>После этого я&nbsp;скажу прямо, есть ли&nbsp;смысл. Если нет&nbsp;— так и&nbsp;скажу, это бывает.</li>
+        <li>Если есть&nbsp;— соберу демо на&nbsp;ваших предметах и&nbsp;преподавателях, чтобы вы&nbsp;смотрели не&nbsp;на&nbsp;чужой пример, а&nbsp;на&nbsp;своего ассистента.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- 15. Контакты -->
+<section id="contact" class="final">
+  <div class="wrap grid">
+    <div class="lbl rv"><span class="n">15</span><span class="pl">Связь</span></div>
+    <div class="main rv">
+      <h2>Посчитаем, сколько заявок теряется у&nbsp;вас</h2>
+      <p class="lead">Напишите&nbsp;— задам несколько вопросов о&nbsp;том, как сейчас обрабатываются обращения, и&nbsp;скажу, есть&nbsp;ли смысл.</p>
+      <div class="btns">
+        <a class="btn btn-a" href="https://t.me/ildar4ik1707" target="_blank" rel="noopener">Telegram</a>
+        <a class="btn btn-o" href="https://wa.me/79337659731" target="_blank" rel="noopener">WhatsApp</a>
+      </div>
+      <a class="phone" href="tel:+79957858451">+7&nbsp;995&nbsp;785-84-51</a>
+    </div>
+  </div>
+</section>
 
 </main>
 
-<footer id="contacts">
-  <div class="container footer-inner fade-in">
-    <h2>Готовы перестать терять заявки на подбор преподавателя?</h2>
-    <p>Напишите — обсудим, какой мессенджер и интеграция подойдут вашему центру.</p>
-    <div class="footer-actions">
-      <a href="https://t.me/davletmuratovai" target="_blank" rel="noopener" class="btn btn-primary">Написать в Telegram</a>
-      <a href="https://wa.me/79337659731" target="_blank" rel="noopener" class="btn btn-wa">Написать в WhatsApp</a>
-    </div>
-    <div class="footer-phones">Позвонить: <a href="tel:+79957858451">+7&nbsp;995&nbsp;785-84-51</a></div>
-    <div class="footer-bottom">© idmAI — ИИ-ассистент для образовательных центров</div>
-    <div class="footer-legal">
-      Самозанятый Давлетмуратов Ильдар Муратович<br>
-      ИНН 773580583271<br>
-      Email: <a href="mailto:ildardav909@gmail.com">ildardav909@gmail.com</a>
-    </div>
+<footer class="foot">
+  <div class="wrap">
+    <!-- Обновлять вручную: месяц, на который есть свободный слот -->
+    <p class="now"><i aria-hidden="true"></i>Сейчас беру проекты на&nbsp;декабрь</p>
+    <p>
+      <span>© idmAI</span>
+      <span>Самозанятый Давлетмуратов Ильдар Муратович</span>
+      <span>ИНН 773580583271</span>
+      <span>Email: <a href="mailto:ildardav909@gmail.com">ildardav909@gmail.com</a></span>
+    </p>
   </div>
 </footer>
 
 <script>
-  // ---------- Мобильное меню ----------
-  const nav = document.getElementById('nav');
-  const navToggle = document.getElementById('navToggle');
-  navToggle.addEventListener('click', () => nav.classList.toggle('open'));
-  document.querySelectorAll('.nav-links a').forEach((a) =>
-    a.addEventListener('click', () => nav.classList.remove('open'))
-  );
-
-  // ---------- Fade-in при скролле ----------
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
+  // ---------- Появление блоков при скролле: только opacity ----------
+  (function () {
+    var els = document.querySelectorAll('.rv');
+    if (!('IntersectionObserver' in window)) {
+      els.forEach(function (el) { el.classList.add('in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
         if (entry.isIntersecting) {
-          entry.target.classList.add('in-view');
-          observer.unobserve(entry.target);
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
         }
       });
-    },
-    { threshold: 0.15 }
-  );
-  document.querySelectorAll('.fade-in').forEach((el) => observer.observe(el));
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    els.forEach(function (el) { io.observe(el); });
+  })();
+
+  const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- Калькулятор потерь ----------
+  (function () {
+    const fmt = (n) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0');
+    const short = (n) => n >= 1e6
+      ? (Math.round(n / 1e5) / 10).toString().replace('.', ',') + '\u00a0млн'
+      : Math.round(n / 1e3) + '\u00a0тыс.';
+    const inputs = {};
+    document.querySelectorAll('.nf input').forEach((el) => { inputs[el.dataset.k] = el; });
+    if (!inputs.students) return;
+
+    const clamp = (el, v) => Math.min(+el.dataset.max, Math.max(+el.dataset.min, v));
+    const raw = (el) => parseInt(el.value.replace(/\D/g, ''), 10) || 0;
+    const size = (el) => { el.style.width = (el.value.length + 0.4) + 'ch'; };
+    const val = (k) => clamp(inputs[k], raw(inputs[k]));
+
+    // Подгоняем кегль, чтобы большие суммы не вылезали за край колонки.
+    function fit(box, text) {
+      const v = box.querySelector('.v');
+      box.style.fontSize = '';
+      const keep = v.textContent;
+      v.textContent = text;
+      if (box.scrollWidth > box.clientWidth) {
+        const base = parseFloat(getComputedStyle(box).fontSize);
+        box.style.fontSize = Math.floor(base * box.clientWidth / box.scrollWidth * 0.98) + 'px';
+      }
+      v.textContent = keep;
+    }
+
+    // Плавный пересчёт числа за 300 мс.
+    function tween(box, to) {
+      const v = box.querySelector('.v');
+      const from = box._v == null ? to : box._v;
+      box._v = to;
+      fit(box, fmt(Math.max(from, to)));
+      cancelAnimationFrame(box._raf);
+      if (REDUCED || from === to) { v.textContent = fmt(to); return; }
+      const t0 = performance.now();
+      const step = (now) => {
+        const p = Math.min(1, (now - t0) / 300);
+        const e = 1 - Math.pow(1 - p, 3);
+        v.textContent = fmt(from + (to - from) * e);
+        if (p < 1) box._raf = requestAnimationFrame(step);
+        else fit(box, fmt(to));
+      };
+      box._raf = requestAnimationFrame(step);
+    }
+
+    const out = {
+      slow: document.getElementById('rSlow'),
+      noshow: document.getElementById('rNoshow'),
+      base: document.getElementById('rBase'),
+      total: document.getElementById('rTotal'),
+    };
+    const rN = document.getElementById('rN');
+
+    function recalc() {
+      const students = val('students'), check = val('check'), leads = val('leads');
+      const slow = leads * 0.2 * 0.25 * check;       // вне рабочего времени × конверсия в оплату
+      const noshow = leads * 0.25 * 0.3 * check;     // дошли до записи × не пришли
+      const base = students * 0.3 * check;           // за год
+      tween(out.slow, slow);
+      tween(out.noshow, noshow);
+      tween(out.base, base);
+      tween(out.total, slow + noshow);
+      // Столбики: всё в пересчёте на год, чтобы три вида потерь можно было сравнить.
+      const year = [slow * 12, noshow * 12, base];
+      const top = Math.max.apply(null, year);
+      [['cbSlow', year[0]], ['cbNoshow', year[1]], ['cbBase', year[2]]].forEach(([id, v]) => {
+        document.getElementById(id).style.height = Math.max(2, v / top * 100) + '%';
+        document.getElementById(id + 'V').textContent = short(v);
+      });
+      const n = Math.ceil(100000 / check);
+      const word = (n % 10 === 1 && n % 100 !== 11) ? 'ученика' : 'учеников';
+      rN.textContent = n + '\u00a0' + word;
+    }
+
+    Object.values(inputs).forEach((el) => {
+      size(el);
+      el.addEventListener('input', () => {
+        let d = el.value.replace(/\D/g, '').slice(0, 6);
+        if (d && +d > +el.dataset.max) d = el.dataset.max;
+        el.value = d ? fmt(+d) : '';
+        size(el);
+        recalc();
+      });
+      el.addEventListener('blur', () => {
+        el.value = fmt(clamp(el, raw(el)));
+        size(el);
+        recalc();
+      });
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          nudge(el, e.key === 'ArrowUp' ? 1 : -1);
+        }
+      });
+      const st = el.parentElement.querySelector('.st');
+      st.querySelector('.up').addEventListener('click', () => nudge(el, 1));
+      st.querySelector('.dn').addEventListener('click', () => nudge(el, -1));
+    });
+
+    function nudge(el, dir) {
+      el.value = fmt(clamp(el, raw(el) + dir * +el.dataset.step));
+      size(el);
+      recalc();
+    }
+
+    recalc();
+    let rt;
+    window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => Object.values(out).forEach((b) => fit(b, fmt(b._v))), 150); });
+  })();
+
+  // ---------- База учеников: одна точка = один ученик ----------
+  (function () {
+    const grid = document.getElementById('dots');
+    const cap = document.getElementById('dotsCap');
+    if (!grid) return;
+    const narrow = window.matchMedia('(max-width: 520px)').matches;
+    const cols = narrow ? 12 : 20, rows = 15, total = cols * rows;
+    grid.style.setProperty('--cols', cols);
+    const dots = [];
+    for (let i = 0; i < total; i++) { const d = document.createElement('i'); grid.appendChild(d); dots.push(d); }
+
+    // Треть базы уходит, каждый четвёртый из ушедших возвращается.
+    const order = dots.map((_, i) => i).sort(() => Math.random() - 0.5);
+    const gone = order.slice(0, Math.round(total / 3));
+    const back = gone.slice().sort(() => Math.random() - 0.5).slice(0, Math.round(gone.length / 4));
+
+    function finalState() {
+      gone.forEach((i) => dots[i].classList.add('gone'));
+      back.forEach((i) => dots[i].classList.add('back'));
+      cap.classList.add('show');
+    }
+    if (REDUCED || !('IntersectionObserver' in window)) { finalState(); return; }
+
+    function run() {
+      const WAVE = 70;                                  // мс на столбец, волна слева направо
+      gone.forEach((i) => {
+        const col = i % cols;
+        dots[i].style.transitionDelay = (col * WAVE + Math.random() * 120) + 'ms';
+        dots[i].classList.add('gone');
+      });
+      const waveEnd = cols * WAVE + 120 + 500;
+      setTimeout(() => {
+        back.forEach((i, n) => {
+          dots[i].style.transitionDelay = (n * 140) + 'ms';
+          dots[i].classList.add('back');
+        });
+        setTimeout(() => cap.classList.add('show'), back.length * 140 + 500);
+      }, waveEnd + 1000);                               // пауза около секунды
+    }
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { io.disconnect(); run(); }
+    }, { threshold: 0.5 });
+    io.observe(grid);
+  })();
 
   // ---------- Демо-чат: реальный запрос к бэкенду с GigaChat ----------
+  // Перенесено из site_ai/index.html без изменения логики.
   // Бэкенд (bot.py + web.py) задеплоен на Timeweb Cloud App Platform,
   // токен GigaChat в этом файле не хранится, он остаётся только на сервере.
   const API_ENDPOINT = 'https://ildarrrr0-salon-ai-bot-cd46.twc1.net/api/chat';
 
-  const GREETING = 'Здравствуйте! Меня зовут Полина, я ассистент репетиторского центра «Формула». Помогу подобрать преподавателя под вашу задачу и записать на бесплатное пробное занятие. По какому предмету и для кого ищете преподавателя?';
+  const GREETING = 'Здравствуйте! Я ИИ-ассистент школы. Помогу подобрать преподавателя и записаться на бесплатное пробное занятие. По какому предмету и для кого ищете преподавателя?';
 
   const chatMessages = document.getElementById('chatMessages');
   const chatForm = document.getElementById('chatForm');
   const chatInput = document.getElementById('chatInput');
   const chatSend = document.getElementById('chatSend');
+  const QUICK = ['Сколько стоит занятие?', 'Есть ли онлайн-формат?', 'Хочу записать ребёнка на пробное'];
+  let quickEl = null;
 
   let conversation = [];
 
   function addBubble(role, text) {
     const div = document.createElement('div');
-    div.className = 'bubble ' + (role === 'user' ? 'user' : role === 'error' ? 'bot error-bubble' : 'bot');
+    div.className = 'msg ' + (role === 'user' ? 'user' : role === 'error' ? 'bot error' : 'bot');
     div.textContent = text;
     chatMessages.appendChild(div);
     chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -781,14 +1228,50 @@
 
   function addTyping() {
     const div = document.createElement('div');
-    div.className = 'bubble bot typing';
+    div.className = 'msg bot typing';
+    div.setAttribute('aria-label', 'Ассистент печатает');
     div.innerHTML = '<span></span><span></span><span></span>';
     chatMessages.appendChild(div);
     chatMessages.scrollTop = chatMessages.scrollHeight;
     return div;
   }
 
-  addBubble('bot', GREETING);
+  // Кнопки-подсказки под приветствием: подставляют текст и отправляют ту же форму.
+  function showQuick() {
+    quickEl = document.createElement('div');
+    quickEl.className = 'quick';
+    QUICK.forEach((q) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = q;
+      b.addEventListener('click', () => {
+        if (chatInput.disabled) return;
+        chatInput.value = q;
+        if (chatForm.requestSubmit) chatForm.requestSubmit();
+        else chatForm.dispatchEvent(new Event('submit', { cancelable: true }));
+      });
+      quickEl.appendChild(b);
+    });
+    chatMessages.appendChild(quickEl);
+  }
+
+  function setBusy(busy) {
+    chatInput.disabled = busy;
+    chatSend.disabled = busy;
+    if (busy && quickEl) { quickEl.remove(); quickEl = null; }
+  }
+
+  // Приветствие появляется не сразу: полсекунды тишины, затем «печатает…», затем текст.
+  setTimeout(() => {
+    if (conversation.length) return;
+    const typing = addTyping();
+    setTimeout(() => {
+      typing.remove();
+      if (conversation.length) return;
+      addBubble('bot', GREETING);
+      showQuick();
+    }, 900);
+  }, 500);
 
   chatForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -800,8 +1283,7 @@
     conversation = conversation.slice(-20);
 
     chatInput.value = '';
-    chatInput.disabled = true;
-    chatSend.disabled = true;
+    setBusy(true);
     const typingEl = addTyping();
 
     try {
@@ -823,12 +1305,13 @@
       typingEl.remove();
       addBubble(
         'error',
-        'Не получилось получить ответ — похоже, бэкенд ещё не подключён или временно недоступен. Попробуйте демо в Telegram: t.me/aitesttttttbot'
+        'Не получилось получить ответ — сервер временно недоступен. Попробуйте ещё раз или напишите тому же ассистенту в Telegram: t.me/aitesttttttbot'
       );
     } finally {
-      chatInput.disabled = false;
-      chatSend.disabled = false;
-      chatInput.focus();
+      setBusy(false);
+      chatInput.focus({ preventScroll: true });
     }
   });
 </script>
+</body>
+</html>
