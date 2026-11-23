@@ -359,7 +359,20 @@ figcaption b { font-weight: 500; color: var(--text); }
 .price .pack-txt + .when { margin-top: 10px; }
 .price .eyebrow { margin-bottom: 18px; }
 .price-note { margin: 16px clamp(22px, 4vw, 48px) 0; max-width: 46em; }
-@media (min-width: 760px) { .solos { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+/* Package detail: description on the left, grouped contents on the right */
+.pk { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px var(--gap); }
+.pk-for { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line2); font-size: 16px; line-height: 1.5; color: var(--text); }
+.pk-for span { display: block; margin-bottom: 4px; font-size: 13px; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; color: var(--sand); }
+.pk-list .k { margin-top: 0; }
+.pk-g { margin-top: 16px; }
+.pk-h { font-size: 13px; font-weight: 500; letter-spacing: .04em; color: var(--dim); margin-bottom: 4px; }
+.pk-g ul { list-style: none; }
+.pk-g li { position: relative; padding: 8px 0 8px 18px; border-top: 1px solid var(--line2); font-size: 16px; line-height: 1.45; }
+.pk-g li::before { content: ""; position: absolute; left: 2px; top: 1.05em; width: 6px; height: 6px; border-radius: 50%; background: var(--sand); }
+@media (min-width: 760px) {
+  .solos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .pk { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); }
+}
 
 /* ---------- About ---------- */
 .about { display: flex; flex-direction: column; gap: 28px; }
@@ -909,15 +922,83 @@ footer.foot { background: var(--deep); padding: 36px 0 48px; }
         <div class="price p2 rv">
           <h3>Система заявок</h3>
           <div class="sum">60&nbsp;000<span class="cur">₽</span></div>
-          <p class="pack-txt">ИИ-ассистент доводит родителя до&nbsp;записи на&nbsp;пробное: отвечает, расспрашивает, подбирает преподавателя. Напоминает о&nbsp;занятии накануне. Готовая заявка падает в&nbsp;вашу CRM.</p>
-          <p class="when">Ставится виджетом на&nbsp;ваш существующий сайт.</p>
+          <div class="pk">
+            <div class="pk-about">
+              <p class="pack-txt">ИИ-ассистент доводит родителя до&nbsp;записи на&nbsp;пробное: отвечает, расспрашивает, подбирает преподавателя. Напоминает о&nbsp;занятии накануне. Готовая заявка падает в&nbsp;вашу CRM.</p>
+              <p class="when">Ставится виджетом на&nbsp;ваш существующий сайт.</p>
+              <p class="pk-for"><span>Подойдёт, если</span>сайт свежий и&nbsp;менять его незачем.</p>
+            </div>
+            <div class="pk-list">
+              <p class="k">Что входит</p>
+              <div class="pk-g">
+                <p class="pk-h">Ассистент</p>
+                <ul>
+                  <li>Telegram + один мессенджер на&nbsp;выбор: MAX или WhatsApp</li>
+                  <li>Виджет чата на&nbsp;ваш действующий сайт</li>
+                  <li>Подбор преподавателя и&nbsp;запись на&nbsp;пробное</li>
+                  <li>Напоминания о&nbsp;занятии и&nbsp;об&nbsp;оплате</li>
+                </ul>
+              </div>
+              <div class="pk-g">
+                <p class="pk-h">CRM</p>
+                <ul>
+                  <li>Интеграция с&nbsp;вашей CRM: заявки, контакты, источник</li>
+                </ul>
+              </div>
+              <div class="pk-g">
+                <p class="pk-h">После запуска</p>
+                <ul>
+                  <li>База знаний, которую вы&nbsp;обновляете сами</li>
+                  <li>30 дней бесплатных правок после запуска</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="price p1 rv">
           <p class="eyebrow">Собрано у&nbsp;Ensina-me</p>
           <h3>Школа под ключ</h3>
           <div class="sum">100&nbsp;000<span class="cur">₽</span></div>
-          <p class="pack-txt">Сайт школы, ИИ-ассистент и&nbsp;реактивация учеников&nbsp;— в&nbsp;одной связке.</p>
-          <p class="when">Именно эта сборка дала Ensina-me 40&nbsp;продаж в&nbsp;сентябре против 25&nbsp;годом раньше.</p>
+          <div class="pk">
+            <div class="pk-about">
+              <p class="pack-txt">Сайт школы, ИИ-ассистент и&nbsp;реактивация учеников&nbsp;— в&nbsp;одной связке.</p>
+              <p class="when">Именно эта сборка дала Ensina-me 40&nbsp;продаж в&nbsp;сентябре против 25&nbsp;годом раньше.</p>
+              <p class="pk-for"><span>Подойдёт, если</span>сайту больше пяти лет или его делали на&nbsp;скорую руку.</p>
+            </div>
+            <div class="pk-list">
+              <p class="k">Что входит</p>
+              <div class="pk-g">
+                <p class="pk-h">Сайт</p>
+                <ul>
+                  <li>Структура и&nbsp;тексты</li>
+                  <li>Адаптив под телефон</li>
+                  <li>CMS для самостоятельных правок</li>
+                </ul>
+              </div>
+              <div class="pk-g">
+                <p class="pk-h">Ассистент</p>
+                <ul>
+                  <li>Telegram + один мессенджер на&nbsp;выбор: MAX или WhatsApp</li>
+                  <li>Виджет чата на&nbsp;сайте</li>
+                  <li>Интеграция с&nbsp;вашей CRM: заявки, контакты, источник</li>
+                  <li>Напоминания о&nbsp;занятии и&nbsp;об&nbsp;оплате</li>
+                </ul>
+              </div>
+              <div class="pk-g">
+                <p class="pk-h">Реактивация</p>
+                <ul>
+                  <li>Возврат учеников по&nbsp;истории CRM</li>
+                </ul>
+              </div>
+              <div class="pk-g">
+                <p class="pk-h">После запуска</p>
+                <ul>
+                  <li>База знаний, которую вы&nbsp;обновляете сами</li>
+                  <li>30 дней бесплатных правок после запуска</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="terms rv">
           <p>30 дней от&nbsp;получения материалов. Оплата 50/50: половина на&nbsp;старте, половина&nbsp;— когда вы&nbsp;увидели готового ассистента в&nbsp;работе.</p>
